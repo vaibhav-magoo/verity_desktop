@@ -1,6 +1,6 @@
 {
   "name": "verity-desktop-3d",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "An expressive 3D desktop companion for AI conversations, voice, and agent presence.",
   "main": "src/main.js",
   "bin": {
@@ -16,6 +16,7 @@
     "hermes": "node ./bin/verity-hermes.js",
     "hermes:sphere": "node ./bin/verity-hermes.js --overlay",
     "build:exe": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe /target:winexe /win32icon:src\\assets\\verity.ico /out:Verity.exe /r:System.Windows.Forms.dll,System.Drawing.dll scripts\\Launcher.cs",
+    "dist:win": "electron-builder --win portable --x64 --publish never",
     "test:hermes": "node tests/test_hermes_integration.js",
     "tts": ".venv\\Scripts\\python.exe services/kokoro_tts_server.py",
     "tts:qwen": ".venv\\Scripts\\python.exe services/qwen3_tts_server.py",
@@ -26,7 +27,6 @@
     "test:providers": "node tests/test_provider_credentials.js"
   },
   "dependencies": {
-    "electron": "^35.0.0",
     "three": "^0.186.1"
   },
   "files": [
@@ -68,5 +68,9 @@
       ],
       "artifactName": "Verity-${version}-x64-portable.${ext}"
     }
+  },
+  "devDependencies": {
+    "electron": "^35.7.5",
+    "electron-builder": "26.18.0"
   }
 }

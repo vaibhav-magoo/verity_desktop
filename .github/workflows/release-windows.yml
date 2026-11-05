@@ -25,7 +25,7 @@ jobs:
         run: npm ci
 
       - name: Package portable Windows app
-        run: npx --yes electron-builder@26 --win portable --x64 --publish never
+        run: npm run dist:win
 
       - name: Create SHA-256 checksum
         shell: pwsh
