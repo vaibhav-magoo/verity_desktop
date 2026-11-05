@@ -44,7 +44,7 @@ An expressive 3D companion for AI conversations, voice, and agent activity. Veri
 
 | | | |
 |:--|:--|:--|
-| **A face with range** | 15 reference expressions and a library of procedural behaviors bring reactions to life. | **A companion that moves** | Keep Verity in the studio or pop it out into a compact floating desktop view. |
+| **A face with range** | 15 reference expressions and 721 registered behavioral animations bring reactions to life: 121 core behaviors plus 600 extended procedural variations across 16 categories. | **A companion that moves** | Keep Verity in the studio or pop it out into a compact floating desktop view. |
 | **A voice you can shape** | Optional local speech synthesis, local custom speech, microphone input, and animated lip movement. | **A studio to tune it** | Explore motion, expression, presence, voice, and conversation controls in one interface. |
 | **Agent-aware presence** | Optional Hermes Gateway connection can surface agent activity and tool states through the avatar. | **A little theatre** | Trigger playful actions directly from the interface, from a yawn to a screen breakout. |
 
