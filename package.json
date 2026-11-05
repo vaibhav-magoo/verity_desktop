@@ -1,0 +1,40 @@
+{
+  "name": "verity-desktop-3d",
+  "version": "1.0.0",
+  "description": "An expressive 3D desktop companion for AI conversations, voice, and agent presence.",
+  "main": "src/main.js",
+  "bin": {
+    "verity-hermes": "./bin/verity-hermes.js"
+  },
+  "scripts": {
+    "test:presence": "node tests/test_presence.js",
+    "test:orb": "node tests/test_orb_gestures.js",
+    "test:emotion": "node tests/test_emotion_director.js",
+    "start": "electron .",
+    "overlay": "electron . --overlay",
+    "studio": "node src/launch.js",
+    "hermes": "node ./bin/verity-hermes.js",
+    "hermes:sphere": "node ./bin/verity-hermes.js --overlay",
+    "build:exe": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe /target:winexe /win32icon:src\\assets\\verity.ico /out:Verity.exe /r:System.Windows.Forms.dll,System.Drawing.dll scripts\\Launcher.cs",
+    "test:hermes": "node tests/test_hermes_integration.js",
+    "tts": ".venv\\Scripts\\python.exe services/kokoro_tts_server.py",
+    "tts:qwen": ".venv\\Scripts\\python.exe services/qwen3_tts_server.py",
+    "sentiment": ".venv\\Scripts\\python.exe services/sentiment_engine.py --server 4778",
+    "conversation": "electron . --studio",
+    "test:conversation:live": "electron tests/test_conversation_live.js",
+    "test:multiwindow": "electron tests/test_multiwindow_voice.js",
+    "test:providers": "node tests/test_provider_credentials.js"
+  },
+  "dependencies": {
+    "electron": "^35.0.0",
+    "three": "^0.186.1"
+  },
+  "files": [
+    "src/",
+    "services/",
+    "bin/",
+    "scripts/",
+    "docs/",
+    "README.md"
+  ]
+}

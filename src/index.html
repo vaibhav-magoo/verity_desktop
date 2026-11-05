@@ -1,0 +1,3010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verity // Hermes 3D Desktop Companion</title>
+  <!-- Premium Geometric Grotesk & Technical Monospace Fonts (Strict Zero-Default Typography) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="./three.min.js"></script>
+  <script src="./verity-animations.js"></script>
+  <script src="./verity-emotion-director.js"></script>
+<script src="./verity-sentiment.js"></script>
+  <script src="./verity-three.js"></script>
+<script src="./verity-presence.js"></script>
+<script src="./verity-voice.js"></script>
+<script src="./verity-tts.js"></script>
+<script src="./verity-mic-control.js"></script>
+  <style>
+    :root {
+      --bg-oled: #050505;
+      --bg-core: #090a0f;
+      --bg-surface: #0e1017;
+      --bg-elevated: #131620;
+      --hairline: rgba(255, 255, 255, 0.075);
+      --hairline-bright: rgba(255, 255, 255, 0.15);
+      --inner-specular: inset 0 1px 1px rgba(255, 255, 255, 0.13);
+      --verity-gold: #ffee00;
+      --verity-gold-soft: rgba(255, 238, 0, 0.14);
+      --emerald: #10b981;
+      --crimson: #f43f5e;
+      --cyan: #38bdf8;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-dim: #64748b;
+      --spring-Fluid: cubic-bezier(0.32, 0.72, 0, 1);
+      --spring-Out: cubic-bezier(0.16, 1, 0.3, 1);
+      --breakout-tx: 0px;
+      --breakout-ty: 0px;
+    }
+
+    /* Universal Zero-Scrollbar Guarantee & Clean Fluid Typography */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden !important;
+      background: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+    *::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-oled);
+      color: var(--text-primary);
+      font-family: 'Plus Jakarta Sans', 'Space Grotesk', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Ambient Radial Mesh Orbs (Ethereal Glass Archetype) */
+    .ambient-mesh {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 26% 38%, rgba(255, 238, 0, 0.08) 0%, transparent 48%),
+        radial-gradient(circle at 78% 22%, rgba(16, 185, 129, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 70% 82%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+    }
+
+    /* Fixed Film-Grain Noise Overlay (GPU-Safe) */
+    .noise-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 50;
+      opacity: 0.032;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ==========================================================
+       FRAMELESS BESPOKE WINDOW BAR (AESTHETIC DESKTOP CHROME)
+       ========================================================== */
+    .verity-window-bar {
+      position: relative;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 14px 5px;
+      -webkit-app-region: drag;
+      width: 100%;
+      height: 38px;
+      flex-shrink: 0;
+    }
+
+    .window-drag-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      -webkit-app-region: drag;
+    }
+
+    .brand-orb {
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      background: var(--verity-gold);
+      box-shadow: 0 0 12px rgba(255, 238, 0, 0.95);
+      animation: orbPulse 3s infinite ease-in-out;
+    }
+
+    @keyframes orbPulse {
+      0%, 100% { transform: scale(1); opacity: 0.85; }
+      50% { transform: scale(1.25); opacity: 1; box-shadow: 0 0 16px rgba(255, 238, 0, 1); }
+    }
+
+    .brand-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .brand-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #6ee7b7;
+      letter-spacing: 0.08em;
+    }
+
+    .hermes-live-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      color: var(--emerald);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 9999px;
+      background: var(--emerald);
+      box-shadow: 0 0 6px var(--emerald);
+    }
+
+    .status-dot.offline {
+      background: #f59e0b;
+      box-shadow: 0 0 6px #f59e0b;
+    }
+
+    .window-controls-cluster {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      -webkit-app-region: no-drag;
+    }
+
+    .win-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.25s var(--spring-Fluid);
+    }
+
+    .win-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      transform: scale(1.08);
+    }
+
+    .win-btn.active-pinned {
+      background: rgba(255, 238, 0, 0.18);
+      border-color: rgba(255, 238, 0, 0.5);
+      color: var(--verity-gold);
+      box-shadow: 0 0 10px rgba(255, 238, 0, 0.35);
+    }
+
+    .win-btn.win-close:hover {
+      background: rgba(244, 63, 94, 0.35);
+      border-color: rgba(244, 63, 94, 0.6);
+      color: #fda4af;
+    }
+
+    /* ==========================================================
+       FLOATING COMPANION OVERLAY MODE (SLEEK COMPACT CARD)
+       ========================================================== */
+    body.overlay-mode {
+      background: transparent !important;
+    }
+
+    body.overlay-mode .ambient-mesh,
+    body.overlay-mode .noise-overlay {
+      display: none !important;
+    }
+
+    body.overlay-mode .bento-workspace {
+      display: flex !important;
+      flex-direction: column !important;
+      height: calc(100vh - 44px) !important;
+      padding: 0 12px 12px !important;
+      gap: 10px !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+      grid-template-columns: none !important;
+    }
+
+    body.overlay-mode .stage-shell {
+      flex: 0 0 240px !important;
+      height: 240px !important;
+      min-height: 240px !important;
+      max-height: 240px !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      overflow: visible !important;
+    }
+
+    body.overlay-mode .stage-core {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      height: 100% !important;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      position: relative !important;
+    }
+
+    body.overlay-mode #threeContainer {
+      width: 230px !important;
+      height: 230px !important;
+      max-width: 100% !important;
+      max-height: 100% !important;
+      border-radius: 0 !important;
+      margin: 0 auto !important;
+      transform: none !important;
+      position: relative !important;
+      z-index: 2 !important;
+      cursor: grab !important;
+      -webkit-app-region: drag !important;
+    }
+
+    /* Pure Floating Ball Mode (Zero Box / Floating PA) */
+    body.overlay-mode.pure-ball-mode .chat-brain-module {
+      display: none !important;
+    }
+
+    body.overlay-mode.pure-ball-mode .verity-window-bar {
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    body.overlay-mode.pure-ball-mode:hover .verity-window-bar {
+      opacity: 1;
+    }
+
+    body.overlay-mode .shatter-svg,
+    body.overlay-mode .breach-diagnostic,
+    body.overlay-mode .stage-footer-bar,
+    body.overlay-mode .telemetry-debug-module {
+      display: none !important;
+    }
+
+    body.overlay-mode .control-column {
+      flex: 1 !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 0 !important;
+      padding: 0 !important;
+    }
+
+    body.overlay-mode .chat-brain-module {
+      flex: 1 !important;
+      min-height: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100% !important;
+      border-radius: 24px !important;
+      background: rgba(11, 13, 20, 0.75) !important;
+      backdrop-filter: blur(28px) !important;
+      -webkit-backdrop-filter: blur(28px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow: var(--inner-specular), 0 20px 40px rgba(0,0,0,0.65) !important;
+      padding: 6px !important;
+    }
+
+    body.overlay-mode .chat-brain-module .doppelrand-core {
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100% !important;
+      justify-content: space-between !important;
+      gap: 7px !important;
+      padding: 10px 12px !important;
+      border-radius: 18px !important;
+      background: rgba(7, 9, 14, 0.6) !important;
+    }
+
+    body.overlay-mode #chatHistory {
+      flex: 1 !important;
+      min-height: 70px !important;
+      max-height: 105px !important;
+      overflow-y: auto !important;
+    }
+
+    /* Sphere Audio Reactive Glow */
+    .sphere-audio-glow {
+      position: absolute;
+      bottom: 14px;
+      width: 140px;
+      height: 14px;
+      border-radius: 9999px;
+      background: radial-gradient(ellipse at center, rgba(255, 238, 0, 0.35) 0%, transparent 70%);
+      filter: blur(6px);
+      transition: all 0.3s ease;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .sphere-audio-glow.speaking {
+      opacity: 0.95;
+      transform: scale(1.35);
+      background: radial-gradient(ellipse at center, rgba(255, 238, 0, 0.65) 0%, transparent 70%);
+      filter: blur(8px);
+    }
+
+    /* Conversational Input Island */
+    .companion-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid var(--hairline-bright);
+      border-radius: 9999px;
+      padding: 3px 5px 3px 12px;
+      transition: all 0.3s var(--spring-Fluid);
+    }
+
+    .companion-input-wrap:focus-within {
+      border-color: rgba(255, 238, 0, 0.5);
+      box-shadow: 0 0 16px rgba(255, 238, 0, 0.2);
+    }
+
+    .companion-input-field {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #ffffff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11.5px;
+    }
+
+    .companion-chips-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-top: 1px;
+    }
+
+    .companion-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-secondary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.25s var(--spring-Fluid);
+    }
+
+    .companion-chip:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    /* ==========================================================
+       FLUID ISLAND DETACHED NAVBAR
+       ========================================================== */
+    .fluid-island-wrap {
+      position: relative;
+      z-index: 40;
+      display: flex;
+      justify-content: center;
+      padding: 14px 24px 6px;
+      -webkit-app-region: drag;
+    }
+
+    .fluid-island {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 7px 10px 7px 18px;
+      border-radius: 9999px;
+      background: rgba(11, 13, 19, 0.74);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--hairline-bright);
+      box-shadow: var(--inner-specular), 0 20px 50px rgba(0, 0, 0, 0.65);
+      transition: transform 0.65s var(--spring-Fluid);
+      -webkit-app-region: no-drag;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      -webkit-app-region: drag;
+    }
+
+    .brand-orb {
+      width: 10px;
+      height: 10px;
+      border-radius: 9999px;
+      background: var(--verity-gold);
+      box-shadow: 0 0 14px rgba(255, 238, 0, 0.85);
+      position: relative;
+    }
+
+    .brand-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 12.5px;
+      letter-spacing: 0.08em;
+      color: var(--text-primary);
+      text-transform: uppercase;
+    }
+
+    .brand-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      background: rgba(255, 238, 0, 0.1);
+      border: 1px solid rgba(255, 238, 0, 0.28);
+      color: var(--verity-gold);
+      letter-spacing: 0.12em;
+    }
+
+    .island-divider {
+      width: 1px;
+      height: 18px;
+      background: var(--hairline);
+    }
+
+    /* Nested CTA "Button-in-Button" Architecture */
+    .cta-island-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 5px 5px 14px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--hairline-bright);
+      color: var(--text-primary);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--inner-specular);
+      transition: transform 0.55s var(--spring-Fluid), background-color 0.55s var(--spring-Fluid), border-color 0.55s var(--spring-Fluid);
+    }
+
+    .cta-island-btn:hover {
+      background: rgba(255, 238, 0, 0.12);
+      border-color: rgba(255, 238, 0, 0.45);
+      color: var(--verity-gold);
+    }
+
+    .cta-island-btn:active {
+      transform: scale(0.97);
+    }
+
+    .cta-island-btn.gold-primary {
+      background: var(--verity-gold);
+      color: #050505;
+      border-color: var(--verity-gold);
+      font-weight: 700;
+    }
+
+    .cta-island-btn.gold-primary:hover {
+      background: #fff34d;
+    }
+
+    .cta-island-btn.breach-active {
+      background: rgba(244, 63, 94, 0.18);
+      border-color: var(--crimson);
+      color: #fda4af;
+    }
+
+    .btn-icon-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.1);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.55s var(--spring-Fluid), background-color 0.55s var(--spring-Fluid);
+    }
+
+    .gold-primary .btn-icon-circle {
+      background: rgba(0, 0, 0, 0.14);
+      color: #050505;
+    }
+
+    .cta-island-btn:hover .btn-icon-circle {
+      transform: translate(2px, -1px) scale(1.07);
+    }
+
+    /* ==========================================================
+       ASYMMETRICAL BENTO WORKSPACE & DOUBLE-BEZEL (DOPPELRAND)
+       ========================================================== */
+    .bento-workspace {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.08fr 460px;
+      gap: 16px;
+      padding: 10px 22px 20px;
+      min-height: 0;
+    }
+
+    /* Double-Bezel Outer Shell */
+    .doppelrand-shell {
+      background: rgba(255, 255, 255, 0.024);
+      border: 1px solid var(--hairline);
+      padding: 6px;
+      border-radius: 28px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      transition: transform 0.75s var(--spring-Fluid), opacity 0.75s var(--spring-Fluid), border-color 0.55s var(--spring-Fluid);
+    }
+
+    /* Double-Bezel Inner Core */
+    .doppelrand-core {
+      background: var(--bg-core);
+      border: 1px solid rgba(255, 255, 255, 0.045);
+      box-shadow: var(--inner-specular), 0 24px 48px -12px rgba(0, 0, 0, 0.7);
+      border-radius: 22px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+      min-height: 0;
+      position: relative;
+    }
+
+    /* Entry Reveal Animation */
+    .reveal-item {
+      opacity: 0;
+      transform: translateY(22px);
+      animation: revealUp 0.85s var(--spring-Out) forwards;
+    }
+    .delay-1 { animation-delay: 60ms; }
+    .delay-2 { animation-delay: 130ms; }
+    .delay-3 { animation-delay: 200ms; }
+    .delay-4 { animation-delay: 270ms; }
+    .delay-5 { animation-delay: 340ms; }
+
+    @keyframes revealUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Eyebrow Pill Tags */
+    .eyebrow-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .eyebrow-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 9999px;
+      padding: 3px 10px;
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--hairline);
+      color: var(--text-secondary);
+    }
+
+    .eyebrow-pill .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 9999px;
+      background: var(--verity-gold);
+    }
+
+    /* ==========================================================
+       3D CONTAINMENT STAGE & SCREEN-TOP BREAKOUT MECHANICS
+       ========================================================== */
+    .stage-shell {
+      position: relative;
+      z-index: 30;
+    }
+
+    .stage-core {
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(255, 238, 0, 0.09) 0%, rgba(9, 10, 15, 0) 66%),
+        linear-gradient(180deg, #0d0f17 0%, #07080c 100%);
+      overflow: visible;
+    }
+
+    /* Containment Box Frame Reticles & Glass Crack SVG */
+    .containment-frame-ui {
+      position: absolute;
+      inset: 14px;
+      border: 1px dashed rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 14px 18px;
+      transition: border-color 0.5s var(--spring-Fluid), box-shadow 0.5s var(--spring-Fluid);
+    }
+
+    .stage-shell.charging .containment-frame-ui {
+      border-color: rgba(255, 238, 0, 0.55);
+      box-shadow: inset 0 0 50px rgba(255, 238, 0, 0.15);
+      animation: boxChargeTremor 0.08s infinite alternate;
+    }
+
+    @keyframes boxChargeTremor {
+      from { transform: translate(-2px, 1px); }
+      to { transform: translate(2px, -1px); }
+    }
+
+    .stage-shell.breached .containment-frame-ui {
+      border-color: rgba(244, 63, 94, 0.55);
+      box-shadow: inset 0 0 70px rgba(244, 63, 94, 0.12);
+    }
+
+    /* Shattered Glass Spiderweb Cracks SVG */
+    .shatter-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.88);
+      transition: opacity 0.35s var(--spring-Out), transform 0.55s var(--spring-Out);
+    }
+
+    .stage-shell.breached .shatter-svg {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Shockwave Flash Pulse on Shatter Impact */
+    .shatter-flash {
+      position: absolute;
+      inset: 0;
+      border-radius: 22px;
+      background: radial-gradient(circle at 50% 25%, rgba(255, 238, 0, 0.55), transparent 70%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s var(--spring-Out);
+    }
+
+    .shatter-flash.active {
+      opacity: 1;
+    }
+
+    /* Containment Breached Diagnostic Placeholder inside the Empty Box */
+    .breach-diagnostic {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 0.55s var(--spring-Fluid), transform 0.55s var(--spring-Fluid);
+      z-index: 5;
+    }
+
+    .stage-shell.breached .breach-diagnostic {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .breach-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(244, 63, 94, 0.14);
+      border: 1px solid rgba(244, 63, 94, 0.45);
+      color: #fda4af;
+      box-shadow: 0 0 30px rgba(244, 63, 94, 0.25);
+    }
+
+    /* The 3D WebGL Sphere Container — Breaks out of box and pops to Screen Top! */
+    #threeContainer {
+      width: min(62dvh, 470px);
+      height: min(62dvh, 470px);
+      cursor: grab;
+      -webkit-app-region: no-drag;
+      border-radius: 24px;
+      position: relative;
+      z-index: 60;
+      will-change: transform;
+      transition: transform 0.82s cubic-bezier(0.22, 1.28, 0.36, 1), filter 0.55s var(--spring-Fluid);
+    }
+
+    #threeContainer.popped-to-screen-top {
+      transform: translate3d(var(--breakout-tx), var(--breakout-ty), 0) scale(0.56);
+      filter: drop-shadow(0 22px 45px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 28px rgba(255, 238, 0, 0.38));
+    }
+
+    /* Bottom Stage Telemetry Bar */
+    .stage-footer-bar {
+      position: absolute;
+      bottom: 22px;
+      left: 26px;
+      right: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 20;
+      pointer-events: auto;
+    }
+
+    /* ==========================================================
+       RIGHT CONTROL COLUMN (SCROLLABLE DOPPELRAND STACK)
+       ========================================================== */
+    .control-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      padding-right: 4px;
+      min-height: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+    }
+
+    /* Inputs & Textareas */
+    .vanguard-input {
+      width: 100%;
+      background: rgba(5, 6, 9, 0.75);
+      border: 1px solid var(--hairline);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+      border-radius: 14px;
+      color: var(--text-primary);
+      padding: 9px 13px;
+      font-size: 12.5px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      resize: vertical;
+      user-select: text;
+      transition: border-color 0.4s var(--spring-Fluid), box-shadow 0.4s var(--spring-Fluid);
+    }
+
+    .vanguard-input:focus {
+      outline: none;
+      border-color: rgba(255, 238, 0, 0.55);
+      box-shadow: 0 0 0 3px rgba(255, 238, 0, 0.1);
+    }
+
+    .vanguard-select {
+      background: rgba(15, 18, 26, 0.9);
+      border: 1px solid var(--hairline);
+      color: var(--text-primary);
+      padding: 7px 12px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color 0.4s var(--spring-Fluid);
+    }
+
+    .vanguard-select:hover {
+      border-color: var(--hairline-bright);
+    }
+
+    /* Action Pill Buttons */
+    .pill-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--hairline);
+      box-shadow: var(--inner-specular);
+      color: var(--text-primary);
+      padding: 7px 13px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: transform 0.45s var(--spring-Fluid), background-color 0.45s var(--spring-Fluid), border-color 0.45s var(--spring-Fluid);
+    }
+
+    .pill-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--hairline-bright);
+      transform: translateY(-1px);
+    }
+
+    .pill-btn:active {
+      transform: scale(0.97);
+    }
+
+    .pill-btn.active-mode {
+      background: var(--verity-gold-soft);
+      border-color: var(--verity-gold);
+      color: var(--verity-gold);
+    }
+
+    /* Sentiment Gauges */
+    .sentiment-gauges {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .gauge-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--hairline);
+      border-radius: 14px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .gauge-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .gauge-track {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .gauge-fill {
+      height: 100%;
+      border-radius: 9999px;
+      transition: transform 0.55s var(--spring-Fluid), background-color 0.55s var(--spring-Fluid);
+      transform-origin: left center;
+    }
+
+    .emotion-badge {
+      font-family: 'JetBrains Mono', monospace;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: var(--verity-gold-soft);
+      color: var(--verity-gold);
+      border: 1px solid rgba(255, 238, 0, 0.32);
+    }
+
+    /* 721 Behavioral Animations Deck & Voice Modulation Sliders */
+    .vanguard-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.08);
+      outline: none;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .vanguard-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+      cursor: pointer;
+      transition: transform 0.15s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .vanguard-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.22);
+    }
+    .vanguard-slider.intimidating::-webkit-slider-thumb {
+      background: var(--crimson);
+      box-shadow: 0 0 14px rgba(244, 63, 94, 0.95);
+    }
+    .vanguard-slider.high-pitch::-webkit-slider-thumb {
+      background: var(--verity-gold);
+      box-shadow: 0 0 14px rgba(255, 238, 0, 0.95);
+    }
+    .pill-btn.active-pitch {
+      background: rgba(56, 189, 248, 0.18) !important;
+      border-color: var(--cyan) !important;
+      color: #ffffff !important;
+      font-weight: 700 !important;
+    }
+    .mic-btn.recording {
+      background: rgba(244, 63, 94, 0.24) !important;
+      border-color: var(--crimson) !important;
+      color: #fda4af !important;
+      animation: micPulse 1.2s infinite ease-in-out;
+    }
+    @keyframes micPulse {
+      0%, 100% { box-shadow: 0 0 6px rgba(244, 63, 94, 0.4); transform: scale(1); }
+      50% { box-shadow: 0 0 16px rgba(244, 63, 94, 0.95); transform: scale(1.06); }
+    }
+    .msg-subagent {
+      background: rgba(56, 189, 248, 0.08) !important;
+      border-left: 2px solid var(--cyan) !important;
+      padding: 7px 10px;
+      border-radius: 8px;
+    }
+
+    .anim-cat-pills {
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+
+    .anim-cat-pill {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--hairline);
+      color: var(--text-secondary);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.4s var(--spring-Fluid), background-color 0.4s var(--spring-Fluid), color 0.4s var(--spring-Fluid);
+    }
+
+    .anim-cat-pill:hover {
+      border-color: var(--hairline-bright);
+      color: var(--text-primary);
+    }
+
+    .anim-cat-pill.active {
+      background: var(--verity-gold);
+      color: #050505;
+      border-color: var(--verity-gold);
+      font-weight: 700;
+    }
+
+    .anim-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      max-height: 195px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .anim-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--hairline);
+      padding: 8px 10px;
+      border-radius: 13px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      text-align: left;
+      transition: transform 0.45s var(--spring-Fluid), border-color 0.45s var(--spring-Fluid), background-color 0.45s var(--spring-Fluid);
+    }
+
+    .anim-card:hover {
+      border-color: var(--hairline-bright);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-1px);
+    }
+
+    .anim-card.active {
+      background: var(--verity-gold-soft);
+      border-color: var(--verity-gold);
+    }
+
+    .anim-card-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .anim-card.active .anim-card-title {
+      color: var(--verity-gold);
+    }
+
+    .anim-card-meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      color: var(--text-dim);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* 15 Expressions Grid */
+    .expr-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      max-height: 155px;
+      overflow-y: auto;
+    }
+
+    .expr-btn {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--hairline);
+      color: var(--text-primary);
+      padding: 7px 9px;
+      border-radius: 12px;
+      font-size: 10.5px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.4s var(--spring-Fluid), background-color 0.4s var(--spring-Fluid), border-color 0.4s var(--spring-Fluid);
+    }
+
+    .expr-btn:hover {
+      border-color: var(--hairline-bright);
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateY(-1px);
+    }
+
+    .expr-btn.active {
+      background: var(--verity-gold-soft);
+      border-color: var(--verity-gold);
+      color: var(--verity-gold);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* Mobile Collapse Override (< 768px) */
+    @media (max-width: 768px) {
+      body {
+        overflow-y: auto;
+        height: auto;
+      }
+      .bento-workspace {
+        grid-template-columns: 1fr;
+        padding: 12px 16px 32px;
+      }
+      .fluid-island {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+    /* ===== Layout hardening: cards never collapse/overlap, no visible scrollbars ===== */
+    .control-column { scrollbar-width: none !important; padding-right: 0; }
+    .control-column > .doppelrand-shell { flex: 0 0 auto; min-height: auto; }
+    .control-column > .chat-brain-module { height: 400px; }
+    .control-column > .chat-brain-module .doppelrand-core { min-height: 0; }
+    .chat-brain-module #chatHistory { flex: 1 1 auto; min-height: 90px; }
+    .anim-grid, .expr-grid { scrollbar-width: none; }
+    .anim-cat-pills { flex-wrap: wrap; overflow: visible; }
+    .bento-workspace { min-width: 0; grid-template-columns: minmax(0, 1.08fr) minmax(380px, 460px); }
+    .stage-shell { min-width: 0; }
+    @media (max-width: 980px) {
+      .bento-workspace { grid-template-columns: minmax(0, 1fr); overflow-y: auto; }
+      .control-column { overflow: visible; }
+    }
+  </style>
+<link rel="stylesheet" href="./studio.css">
+<link rel="stylesheet" href="./slate.css">
+</head>
+<body>
+  <section class="verity-startup" id="verityStartup" role="status" aria-live="polite" aria-label="Loading Verity Studio">
+    <div class="startup-card">
+      <img class="startup-wordmark" src="./assets/verity-wordmark.png" alt="Verity" />
+      <span class="startup-caption">YOUR PERSONAL COMPANION</span>
+      <p id="startupMessage">Preparing your studio</p>
+      <div class="startup-track" role="progressbar" aria-label="Loading Verity" aria-valuemin="0" aria-valuemax="100" aria-valuenow="8"><span id="startupProgress"></span></div>
+      <span class="startup-percent" id="startupPercent">08%</span>
+    </div>
+  </section>
+  <!-- Ethereal Glass Ambient Mesh & Fixed Film-Grain Overlay -->
+  <div class="ambient-mesh"></div>
+  <div class="noise-overlay"></div>
+
+  <!-- AGENCY-GRADE FRAMELESS WINDOW TITLEBAR -->
+  <header class="verity-window-bar">
+    <div class="window-drag-area">
+      <div class="brand-cluster">
+        <img class="header-wordmark" src="./assets/verity-wordmark.png" alt="Verity" />
+        <span class="brand-title">STUDIO</span>
+        <span class="brand-tag">HERMES 3</span>
+      </div>
+      <div class="hermes-live-pill" id="headerHermesPill">
+        <span class="status-dot" id="headerStatusDot"></span>
+        <span id="headerStatusText">GATEWAY :8642</span>
+      </div>
+    </div>
+    <div class="window-controls-cluster">
+      <button class="win-btn win-pin" id="btnWindowPin" title="Keep window on top" aria-pressed="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 3h6l-.5 5 3 3v2h-11v-2l3-3zM12 13v8"/>
+        </svg>
+      </button>
+      <button class="win-btn win-mode" id="btnWindowMode" title="Toggle Studio / Companion View">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9 3v18"/>
+        </svg>
+      </button>
+      <button class="win-btn win-pure" id="btnTogglePureBall" title="Toggle Pure Floating Ball / Assistant Capsule">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="9"/>
+        </svg>
+      </button>
+      <button class="win-btn win-min" id="btnWindowMin" title="Minimize">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </button>
+      <button class="win-btn win-close" id="btnWindowClose" title="Close Companion">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ASYMMETRICAL BENTO WORKSPACE -->
+  <main class="bento-workspace">
+    <!-- LEFT COLUMN: 3D CONTAINMENT STAGE (DOUBLE-BEZEL DOPPELRAND) -->
+    <section class="doppelrand-shell stage-shell reveal-item delay-1" id="containmentShell">
+      <div class="doppelrand-core stage-core">
+        <!-- Shockwave Flash Layer -->
+        <div class="shatter-flash" id="shatterFlash"></div>
+
+        <!-- Containment Box Glass Reticle & Fracture Spiderweb Cracks -->
+        <div class="containment-frame-ui">
+          <div class="eyebrow-row">
+            <span class="eyebrow-pill">
+              <span class="dot" id="containmentStatusDot"></span>
+              <span id="containmentStatusText">CONTAINMENT BOX // SEALED</span>
+            </span>
+            <span class="eyebrow-pill" id="activeAnimLabel" style="color: var(--verity-gold); border-color: rgba(255,238,0,0.28);">Normal Idle</span>
+          </div>
+
+          <!-- SVG Glass Fracture Lines (Revealed when Verity smashes out of the box) -->
+          <svg class="shatter-svg" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g stroke="rgba(255, 238, 0, 0.55)" stroke-width="1.4">
+              <path d="M300 110 L180 20 M300 110 L420 15 M300 110 L90 140 M300 110 L510 130 M300 110 L240 260 M300 110 L370 250" />
+            </g>
+            <g stroke="rgba(255, 255, 255, 0.28)" stroke-width="1">
+              <path d="M220 55 L300 40 L380 52 M155 95 L240 165 L370 155 L455 88 M190 210 L300 190 L410 205" />
+              <polygon points="285,95 315,90 325,118 278,122" fill="rgba(255, 238, 0, 0.14)" />
+            </g>
+          </svg>
+
+          <div></div>
+        </div>
+
+        <!-- Diagnostic shown inside the empty broken box while Verity is perched at the Screen Top -->
+        <div class="breach-diagnostic" id="breachDiagnostic">
+          <span class="breach-badge">⚠️ CONTAINMENT BREACHED // SPHERE AT SCREEN TOP</span>
+          <p style="font-size: 12px; color: var(--text-secondary); max-width: 290px; text-align: center; line-height: 1.5;">
+            Verity has smashed out of the Double-Bezel viewport enclosure and is currently perched at the top of your screen.
+          </p>
+          <button class="cta-island-btn gold-primary" id="recallSphereBtn">
+            <span>Recall Sphere to Box</span>
+            <span class="btn-icon-circle">↓</span>
+          </button>
+        </div>
+
+        <!-- 3D WebGL Sphere Viewport (Translates out of the box to the Screen Top on breakout) -->
+        <div id="threeContainer"></div>
+
+        <!-- Floating interactive gesture pill on 3D stage -->
+        <div id="gestureHintBadge" style="position: absolute; top: 12px; left: 14px; z-index: 10; display: flex; align-items: center; gap: 6px; font-size: 9.5px; font-family: 'JetBrains Mono', monospace; background: rgba(5, 5, 5, 0.72); border: 1px solid var(--hairline); padding: 4px 10px; border-radius: 9999px; backdrop-filter: blur(8px); cursor: pointer; transition: all 0.3s ease;">
+          <span class="dot" id="gestureDot" style="background: var(--cyan); box-shadow: 0 0 6px var(--cyan);"></span>
+          <span id="gestureHintText" style="color: var(--text-secondary);">Double-Click Ball: Sub-Agent Satellite</span>
+        </div>
+
+        <!-- Audio reactive pulsating ring -->
+        <div class="sphere-audio-glow" id="sphereAudioGlow"></div>
+
+        <!-- Stage Footer Quick Cinematic Triggers -->
+        <div class="stage-footer-bar studio-chrome">
+          <div class="btn-row">
+            <button class="pill-btn active-mode" id="btnAnimNone">Idle</button>
+            <button class="pill-btn" id="btnAnimBreakout" style="border-color: rgba(255, 238, 0, 0.4); color: var(--verity-gold);">🚀 Break Out of Box</button>
+            <button class="pill-btn" id="btnAnimMovie">🍿 Popcorn</button>
+            <button class="pill-btn" id="btnAnimWakeup">🌅 Wake Up</button>
+            <button class="pill-btn" id="btnAnimDigging">⛏ Screen Dive</button>
+            <button class="pill-btn" id="btnAnimCreepy" style="color: #fda4af;">👁 Mutation</button>
+            <button class="pill-btn" id="btnAnimCoding" style="color: #6ee7b7;">💻 Shell Coding</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: SCROLLABLE DOPPELRAND CONTROL MODULES -->
+    <aside class="control-column">
+
+      <!-- MODULE 1: VERITY CONVERSATIONAL BRAIN & HERMES INTERACTION -->
+      <div class="doppelrand-shell reveal-item delay-2 chat-brain-module">
+        <div class="doppelrand-core">
+          <div class="eyebrow-row">
+            <span class="eyebrow-pill"><span class="dot"></span> 01 // AI Conversations & Agent Activity</span>
+            <span id="brainStatusBadge" style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--emerald);">⚡ CONNECTING...</span>
+          </div>
+          <div class="btn-row" style="margin-bottom: 2px;">
+            <select id="brainProviderSelect" class="vanguard-select" style="flex: 1; min-width: 130px; height: 30px; font-size: 10.5px;">
+              <option value="groq">Groq</option>
+            </select>
+            <input id="brainModelInput" class="vanguard-input" list="providerModelList" style="flex: 1; min-width: 110px; height: 30px; padding: 4px 8px; font-size: 10px;" aria-label="AI model" placeholder="Model (optional)">
+            <datalist id="providerModelList"></datalist>
+            <label style="display: flex; align-items: center; gap: 5px; font-size: 10.5px; color: var(--text-secondary); cursor: pointer;">
+              <input type="checkbox" id="autoVoiceCheckbox" checked style="accent-color: var(--verity-gold);">
+              Voice
+            </label>
+            <button class="pill-btn" id="providerSetupToggle" type="button" title="Set up AI providers" aria-expanded="false"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1a1.7 1.7 0 0 1-2.4 2.4l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.7 1.7 0 0 1-3.4 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a1.7 1.7 0 0 1-2.4-2.4l.1-.1a1.7 1.7 0 0 0-1.2-2.9H4a1.7 1.7 0 0 1 0-3.4h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a1.7 1.7 0 0 1 2.4-2.4l.1.1a1.7 1.7 0 0 0 2.9-1.2V2a1.7 1.7 0 0 1 3.4 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.7 1.7 0 0 1 2.4 2.4l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a1.7 1.7 0 0 1 0 3.4h-.2a1.7 1.7 0 0 0-1.2 2.9Z"/></svg></button>
+          </div>
+          <div id="providerSetupPanel" hidden style="padding: 9px; margin: 3px 0 6px; border: 1px solid var(--hairline-bright); border-radius: 10px; background: rgba(255,255,255,.035);">
+            <div style="font-size: 10px; color: var(--text-secondary); margin-bottom: 7px;">Keys are encrypted on this device and sent to the selected provider only when making a request.</div>
+            <div class="btn-row" style="gap: 6px; margin-bottom: 5px;">
+              <input id="providerApiKeyInput" class="vanguard-input" type="password" autocomplete="off" placeholder="Paste API key" style="flex: 1; min-width: 120px; height: 30px; padding: 4px 8px; font-size: 10px;">
+              <input id="providerBaseUrlInput" class="vanguard-input" type="url" placeholder="Custom / local server URL" style="flex: 1; min-width: 150px; height: 30px; padding: 4px 8px; font-size: 10px;">
+              <button class="pill-btn" id="saveProviderSettings" type="button">Save provider</button>
+            </div>
+            <div style="display:flex; justify-content:flex-end; margin-bottom:5px;">
+              <button class="pill-btn" id="loadProviderModels" type="button" style="font-size:9px;">Load available models</button>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+              <span id="providerSetupStatus" style="font-size: 9px; color: var(--text-secondary);">Stored on this device · requests go to your provider.</span>
+              <button class="pill-btn" id="forgetProviderKey" type="button" style="font-size:9px;">Forget saved key</button>
+            </div>
+          </div>
+          <div id="chatHistory" style="overflow-y: auto; display: flex; flex-direction: column; gap: 6px; font-size: 12px; padding: 2px;">
+            <div style="background: rgba(255, 238, 0, 0.06); border-left: 2px solid var(--verity-gold); padding: 7px 10px; border-radius: 8px;">
+              <strong style="color: var(--verity-gold);">Verity:</strong> Vanguard Double-Bezel interface initialized with Hermes Agent. Ask me anything, speak via the mic, or double-click my sphere to summon my Sub-Agent!
+            </div>
+          </div>
+
+          <!-- Sub-Agent Parallel Co-Pilot Channel Bar -->
+          <div id="subAgentBar" style="display: none; align-items: center; justify-content: space-between; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.35); padding: 5px 10px; border-radius: 8px; margin-bottom: 6px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span class="dot" style="background: var(--cyan); box-shadow: 0 0 8px var(--cyan);"></span>
+              <span id="subAgentBarTitle" style="font-size: 10px; font-weight: 700; color: var(--cyan); font-family: 'Space Grotesk', sans-serif;">🛰️ SUB-AGENT ACTIVE (Parallel Co-Pilot)</span>
+            </div>
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <button class="pill-btn" id="btnSubAgentHurry" style="font-size: 9px; padding: 2px 7px;">"Hurry up!"</button>
+              <button class="pill-btn" id="btnSubAgentStatus" style="font-size: 9px; padding: 2px 7px;">"Status?"</button>
+              <button class="pill-btn" id="btnCloseSubAgent" style="font-size: 9px; padding: 2px 7px;" aria-label="Close sub-agent"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+            </div>
+          </div>
+
+          <div class="companion-input-wrap">
+            <button class="pill-btn mic-btn" id="micBtn" title="Toggle Live Voice & VAD (Click to talk)" style="height: 30px; padding: 0 9px; font-size: 11px;">
+              <span id="micIcon">🎙️</span>
+            </button>
+            <input type="text" id="chatInput" placeholder="Converse or speak... (Double-click sphere for Sub-Agent)" class="companion-input-field" />
+            <button class="cta-island-btn gold-primary" id="sendChatBtn" style="height: 30px; padding: 0 12px; font-size: 11px;">
+              <span>Send</span>
+              <span class="btn-icon-circle" style="width: 20px; height: 20px;"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            </button>
+          </div>
+          <div class="companion-chips-row">
+            <button class="companion-chip" id="chipSubAgent" style="border-color: rgba(56, 189, 248, 0.4); color: var(--cyan); font-weight: 700;">🛰️ Sub-Agent Satellite</button>
+            <button class="companion-chip" id="chipCode">⚡ Code</button>
+            <button class="companion-chip" id="chipPopcorn">🍿 Popcorn</button>
+            <button class="companion-chip" id="chipCreepy">👁 Stare</button>
+            <button class="companion-chip" id="chipWake">🌅 Wake</button>
+            <button class="companion-chip" id="chipBreakout" style="color: var(--verity-gold); border-color: rgba(255,238,0,0.3);">🚀 Breakout</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODULE 2: REAL-TIME SENTIMENT & AFFECT TELEMETRY -->
+      <div class="doppelrand-shell reveal-item delay-3 telemetry-debug-module">
+        <div class="doppelrand-core">
+          <div class="eyebrow-row">
+            <span class="eyebrow-pill"><span class="dot" style="background: var(--emerald);"></span> 02 // Affective Appraisal Matrix</span>
+            <span id="sentimentEmotionBadge" class="emotion-badge">Neutral</span>
+          </div>
+          <div class="sentiment-gauges">
+            <div class="gauge-card">
+              <div class="gauge-label">
+                <span>Valence</span>
+                <span id="valLabel">+0.00</span>
+              </div>
+              <div class="gauge-track">
+                <div id="valFill" class="gauge-fill" style="width: 50%; background: #eab308;"></div>
+              </div>
+            </div>
+            <div class="gauge-card">
+              <div class="gauge-label">
+                <span>Arousal</span>
+                <span id="aroLabel">0.35</span>
+              </div>
+              <div class="gauge-track">
+                <div id="aroFill" class="gauge-fill" style="width: 35%; background: var(--cyan);"></div>
+              </div>
+            </div>
+            <div class="gauge-card">
+              <div class="gauge-label">
+                <span>Horror</span>
+                <span id="horLabel">0.00</span>
+              </div>
+              <div class="gauge-track">
+                <div id="horFill" class="gauge-fill" style="width: 0%; background: var(--crimson);"></div>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 10.5px; color: var(--text-secondary); background: rgba(255,255,255,0.02); padding: 7px 11px; border-radius: 12px; border: 1px solid var(--hairline);">
+            <div>
+              <span>Kinematic: </span>
+              <strong id="sentimentTargetAnim" style="color: var(--verity-gold); font-family: 'JetBrains Mono', monospace;">ANIM_007_CHEERFUL_TILT</strong>
+            </div>
+            <div>
+              <span>Face: </span>
+              <strong id="sentimentTargetExpr" style="color: var(--emerald);">01. Classic Smile</strong>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 10.5px; color: var(--text-secondary); background: rgba(255,255,255,0.02); padding: 7px 11px; border-radius: 12px; border: 1px solid var(--hairline); margin-top: 5px;">
+            <div>
+              <span>Pitch Modulation: </span>
+              <strong id="sentimentTargetPitch" style="color: var(--cyan); font-family: 'JetBrains Mono', monospace;">0.0 st (Natural)</strong>
+            </div>
+            <div>
+              <span>Timbre: </span>
+              <strong id="sentimentTargetEffect" style="color: var(--emerald); font-family: 'JetBrains Mono', monospace;">Clean</strong>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="pill-btn" id="btnAnalyzeSpeech" style="border-color: rgba(16, 185, 129, 0.4); color: #6ee7b7;">🧠 Appraise & Express</button>
+            <button class="pill-btn" id="btnRandomEmotion">🎲 Random Mood</button>
+            <label style="display: flex; align-items: center; gap: 5px; font-size: 10.5px; color: var(--text-secondary); cursor: pointer; margin-left: auto;">
+              <input type="checkbox" id="autoEmotionCheckbox" checked style="accent-color: var(--verity-gold);">
+              Live Auto-Appraise
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODULE 3: 721 BEHAVIORAL ANIMATIONS STUDIO SUITE -->
+      <div class="doppelrand-shell reveal-item delay-4 telemetry-debug-module">
+        <div class="doppelrand-core">
+          <div class="eyebrow-row">
+            <span class="eyebrow-pill"><span class="dot"></span> 03 // 721 Behavioral Kinematics Suite</span>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <span id="activeBehaviorLabel" style="color: var(--verity-gold); font-size: 10.5px; font-weight: 700; font-family: 'JetBrains Mono', monospace;">Idle</span>
+              <button class="pill-btn" id="btnStopBehavior" style="padding: 2px 9px; font-size: 9.5px;">⏹ Stop</button>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="text" id="animSearchInput" aria-label="Search motion library" placeholder="Search motions" class="vanguard-input" style="height: 32px; padding: 4px 11px; font-size: 11px; flex: 1;" />
+            <span id="animCountBadge" style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--text-dim); white-space: nowrap;">721 anims</span>
+          </div>
+          <div class="anim-cat-pills" id="animCatPills">
+            <button class="anim-cat-pill active" data-cat="all">All (721)</button>
+            <button class="anim-cat-pill" data-cat="Intimidation & Dominance">👿 Intimidation (55)</button>
+            <button class="anim-cat-pill" data-cat="Combat & Boss Battles">⚔️ Combat (40)</button>
+            <button class="anim-cat-pill" data-cat="Music, Rhythm & Dance">🎵 Music (40)</button>
+            <button class="anim-cat-pill" data-cat="Sci-Fi & Cosmic Magic">🌌 Cosmic (26)</button>
+            <button class="anim-cat-pill" data-cat="Desktop Meta & Glitch">Meta & Breakout (41)</button>
+            <button class="anim-cat-pill" data-cat="Joy & Excitement">Joy (44)</button>
+            <button class="anim-cat-pill" data-cat="Uncanny & Creepy">Uncanny (57)</button>
+            <button class="anim-cat-pill" data-cat="Technical & Analytical">Tech (55)</button>
+            <button class="anim-cat-pill" data-cat="Skeptical & Sarcastic">Sarcastic (50)</button>
+            <button class="anim-cat-pill" data-cat="Shock & Panic">Panic (55)</button>
+            <button class="anim-cat-pill" data-cat="Melancholy & Vulnerable">Melancholy (50)</button>
+            <button class="anim-cat-pill" data-cat="Mischievous & Smug">Mischief (55)</button>
+            <button class="anim-cat-pill" data-cat="Attentive & Curiosity">Attentive (50)</button>
+            <button class="anim-cat-pill" data-cat="Frustration & Anger">Anger (50)</button>
+            <button class="anim-cat-pill" data-cat="Drowsy & Low-Cognition">Drowsy (43)</button>
+            <button class="anim-cat-pill" data-cat="Cinematic & Props">Props (10)</button>
+          </div>
+          <div class="anim-grid" id="animDeckGrid"></div>
+        </div>
+      </div>
+
+      <!-- MODULE 4: DUAL-ENGINE VOICE SYNTHESIS, PITCH MODULATION & TIMBRE DSP -->
+      <div class="doppelrand-shell reveal-item delay-5 telemetry-debug-module">
+        <div class="doppelrand-core">
+          <div class="eyebrow-row">
+            <span class="eyebrow-pill"><span class="dot" style="background: var(--cyan);"></span> 04 // Acoustic Mandible Studio & Timbre DSP</span>
+            <span id="ttsStatusBadge" style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--emerald);">⚡ DUAL-ENGINE READY</span>
+          </div>
+          <div class="btn-row">
+            <select id="voiceSelect" class="vanguard-select" style="flex: 1;" aria-label="Voice">
+              <option value="verity_clone" selected>🎙️ Verity (True Voice Clone - SDPA Stream)</option>
+              <option value="alternate_clone">🎙️ Alternate Voice (True Voice Clone)</option>
+              <option value="verity">⚡ Verity (Kokoro-82M Tensor - 45ms)</option>
+              <option value="alternate">⚡ Alternate (Kokoro-82M Tensor - 45ms)</option>
+              <option value="af_heart">Heart (Warm & Expressive)</option>
+              <option value="af_bella">Bella (Energetic & Bright)</option>
+              <option value="af_nicole">Nicole (Whispery & Calm)</option>
+              <option value="bf_emma">Emma (British Expressive)</option>
+            </select>
+            <select id="speedSelect" class="vanguard-select" title="Speech Speed" aria-label="Speech speed">
+              <option value="0.95">0.95x</option>
+              <option value="1.0">1.00x</option>
+              <option value="1.05" selected>1.05x</option>
+              <option value="1.15">1.15x</option>
+            </select>
+          </div>
+
+          <!-- Real-Time Pitch Modulation & Timbre Controls -->
+          <div style="display: flex; flex-direction: column; gap: 7px; background: rgba(255, 255, 255, 0.02); padding: 8px 11px; border-radius: 12px; border: 1px solid var(--hairline);">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-size: 10.5px; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 5px;">
+                <span><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4M8 6v12M12 3v18M16 7v10M20 10v4"/></svg> Voice Modulation:</span>
+              </span>
+              <span id="pitchBadge" style="font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 700; color: var(--cyan);">0.0 st (Natural)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 9.5px; font-family: 'JetBrains Mono', monospace; color: var(--crimson); font-weight: 700;">-12st</span>
+              <input type="range" id="pitchSlider" min="-12" max="12" step="0.5" value="0" class="vanguard-slider" style="flex: 1;" />
+              <span style="font-size: 9.5px; font-family: 'JetBrains Mono', monospace; color: var(--verity-gold); font-weight: 700;">+12st</span>
+            </div>
+
+            <!-- Pitch Presets Quick-Pills -->
+            <div style="display: flex; gap: 5px; overflow-x: auto; scrollbar-width: none; padding-top: 2px;" id="pitchPresetsRow">
+              <button class="pill-btn active-pitch" data-pitch="0" data-fx="normal">Clean (0st)</button>
+              <button class="pill-btn" data-pitch="-7" data-fx="intimidate" style="border-color: rgba(244, 63, 94, 0.4); color: #fda4af;">👿 Deep Intimidate (-7st)</button>
+              <button class="pill-btn" data-pitch="-12" data-fx="demon" style="border-color: rgba(139, 92, 246, 0.4); color: #c4b5fd;">👹 Demonic Void (-12st)</button>
+              <button class="pill-btn" data-pitch="6.5" data-fx="high" style="border-color: rgba(56, 189, 248, 0.4); color: #7dd3fc;">🐭 High Squeak (+6.5st)</button>
+              <button class="pill-btn" data-pitch="0" data-fx="radio" style="color: #6ee7b7;">📻 Radio</button>
+            </div>
+
+            <!-- Timbre FX Selector & Live Mood Auto-Modulate Toggle -->
+            <div style="display: flex; gap: 8px; align-items: center; margin-top: 3px;">
+              <select id="voiceFxSelect" class="vanguard-select" style="flex: 1; height: 28px; font-size: 10px;" aria-label="Voice effect">
+                <option value="normal" selected>Pure / Natural Timbre</option>
+                <option value="intimidate">Intimidating Sub-Bass Growl (+8.5dB 130Hz + Saturation)</option>
+                <option value="deep">Deep Menacing Chest Resonance</option>
+                <option value="demon">Abyssal Demonic Void (+12dB Sub-Harmonics)</option>
+                <option value="high">High Squeak / Manic Boost</option>
+                <option value="radio">Cybernetic Walkie-Talkie (Bandpass)</option>
+              </select>
+              <label style="display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text-secondary); cursor: pointer; white-space: nowrap;">
+                <input type="checkbox" id="autoPitchCheckbox" checked style="accent-color: var(--verity-gold);">
+                Auto-Modulate with Mood
+              </label>
+            </div>
+          </div>
+
+          <textarea id="speechInput" class="vanguard-input" style="min-height: 54px;" aria-label="Text to synthesize">Hello! Watch me break out of this containment box and pop right up to the top of your screen!</textarea>
+          <div class="btn-row">
+            <button class="cta-island-btn gold-primary" id="speakQwenBtn" style="flex: 1; justify-content: space-between;">
+              <span>Synthesize & Speak Voice</span>
+              <span class="btn-icon-circle">🎙️</span>
+            </button>
+            <button class="pill-btn" id="speakTtsBtn">Browser Synth</button>
+          </div>
+
+          <div class="eyebrow-row" style="margin-top: 4px;">
+            <span class="eyebrow-pill">15 Reference Face Morphs</span>
+            <span id="activeExprLabel" style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--verity-gold);">04. Manic Wide Grin</span>
+          </div>
+          <div class="expr-grid" id="exprGrid"></div>
+        </div>
+      </div>
+
+    </aside>
+  </main>
+
+  <script>
+    const API_BASE = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
+      ? window.location.origin
+      : 'http://127.0.0.1:4777';
+    const TTS_DIRECT_BASE = 'http://127.0.0.1:5001';
+
+    const { VerityThreeAvatar, EXPRESSIONS, VerityAnimations, VeritySentiment } = window;
+    const sentimentController = VeritySentiment ? VeritySentiment.defaultController : null;
+
+    const container = document.getElementById('threeContainer');
+    const containmentShell = document.getElementById('containmentShell');
+    const shatterFlash = document.getElementById('shatterFlash');
+    const containmentStatusText = document.getElementById('containmentStatusText');
+    const containmentStatusDot = document.getElementById('containmentStatusDot');
+    const islandBreakoutBtn = document.getElementById('islandBreakoutBtn');
+    const islandBreakoutLabel = document.getElementById('islandBreakoutLabel');
+    const recallSphereBtn = document.getElementById('recallSphereBtn');
+
+    const avatar = new VerityThreeAvatar(container, {
+      cols: 24,
+      rows: 16,
+      pixelScale: 2
+    });
+
+    const presence = VerityPresence.attach(avatar);
+    window.verityPresence = presence;
+
+    // =========================================================================
+    // BOX BREAKOUT & SCREEN-TOP POP-OUT CHOREOGRAPHY
+    // =========================================================================
+    let isPoppedOutToTop = false;
+
+    function computeScreenTopOffsets() {
+      // Measure current center of #threeContainer in neutral position and calculate delta to top-center of viewport
+      const prevTransform = container.style.transform;
+      container.style.transform = 'none';
+      const rect = container.getBoundingClientRect();
+      container.style.transform = prevTransform;
+
+      const curCenterX = rect.left + rect.width * 0.5;
+      const curCenterY = rect.top + rect.height * 0.5;
+
+      // Target: Top-center of the screen right over the top bezel (Y = 74px from top edge)
+      const targetCenterX = window.innerWidth * 0.5;
+      const targetCenterY = 74;
+
+      const dx = Math.round(targetCenterX - curCenterX);
+      const dy = Math.round(targetCenterY - curCenterY);
+
+      document.documentElement.style.setProperty('--breakout-tx', `${dx}px`);
+      document.documentElement.style.setProperty('--breakout-ty', `${dy}px`);
+    }
+
+    // Desktop app: shoot the ball out of this window into a permanent floating on-screen agent.
+    function popOutToDesktop() {
+      const r = container.getBoundingClientRect();
+      const ballCenter = { cx: Math.round(r.left + r.width / 2), cy: Math.round(r.top + r.height / 2) };
+      avatar.playBehavior && avatar.playBehavior('ANIM_084_RED_FLARE_LUNGE');
+      container.style.transition = 'transform .18s ease-in, opacity .18s ease-in';
+      container.style.transform = 'scale(1.25)';
+      setTimeout(() => {
+        window.verityDesktop.popOut(ballCenter);
+        setTimeout(() => { container.style.transform = ''; container.style.opacity = ''; }, 900);
+      }, 160);
+    }
+
+    function triggerBreakoutToScreenTop() {
+      if (window.verityDesktop && window.verityDesktop.popOut) { popOutToDesktop(); return; }
+      if (isPoppedOutToTop) {
+        recallSphereToContainment();
+        return;
+      }
+      isPoppedOutToTop = true;
+      avatar.setAnimationMode('breakout');
+      activeAnimLabel.textContent = 'Box Breakout // Screen Top';
+      islandBreakoutBtn.classList.add('breach-active');
+      islandBreakoutBtn.classList.remove('gold-primary');
+      islandBreakoutLabel.textContent = 'Recall from Screen Top';
+    }
+
+    function recallSphereToContainment() {
+      isPoppedOutToTop = false;
+      container.classList.remove('popped-to-screen-top');
+      containmentShell.classList.remove('charging', 'breached');
+      containmentStatusText.textContent = 'CONTAINMENT BOX // SEALED';
+      containmentStatusDot.style.background = 'var(--verity-gold)';
+      islandBreakoutBtn.classList.remove('breach-active');
+      islandBreakoutBtn.classList.add('gold-primary');
+      islandBreakoutLabel.textContent = 'Break Out to Screen Top';
+      avatar.setAnimationMode('none');
+      avatar.playBehavior('ANIM_001_HAPPY_BOUNCE', { intensity: 0.9 });
+      activeAnimLabel.textContent = 'Normal Idle';
+    }
+
+    window.addEventListener('verity:breakout-state', (e) => {
+      const { active, phase } = e.detail || {};
+      if (!active || phase === 'contained') {
+        isPoppedOutToTop = false;
+        container.classList.remove('popped-to-screen-top');
+        containmentShell.classList.remove('charging', 'breached');
+        containmentStatusText.textContent = 'CONTAINMENT BOX // SEALED';
+        containmentStatusDot.style.background = 'var(--verity-gold)';
+        islandBreakoutBtn.classList.remove('breach-active');
+        islandBreakoutBtn.classList.add('gold-primary');
+        islandBreakoutLabel.textContent = 'Break Out to Screen Top';
+      } else if (phase === 'charge') {
+        isPoppedOutToTop = true;
+        containmentShell.classList.add('charging');
+        containmentShell.classList.remove('breached');
+        containmentStatusText.textContent = 'WARNING // IMPACT IMMINENT';
+        containmentStatusDot.style.background = '#f59e0b';
+      } else if (phase === 'shatter') {
+        computeScreenTopOffsets();
+        containmentShell.classList.remove('charging');
+        containmentShell.classList.add('breached');
+        container.classList.add('popped-to-screen-top');
+        containmentStatusText.textContent = 'BREACHED // SPHERE AT SCREEN TOP';
+        containmentStatusDot.style.background = 'var(--crimson)';
+
+        if (shatterFlash) {
+          shatterFlash.classList.add('active');
+          setTimeout(() => shatterFlash.classList.remove('active'), 480);
+        }
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (container.classList.contains('popped-to-screen-top')) {
+        computeScreenTopOffsets();
+      }
+    });
+
+    if (islandBreakoutBtn) islandBreakoutBtn.onclick = triggerBreakoutToScreenTop;
+    if (recallSphereBtn) recallSphereBtn.onclick = recallSphereToContainment;
+
+    // --- Sentiment Analysis Display Synchronization ---
+    function updateSentimentDisplay(appraisal) {
+      if (!appraisal) return;
+      const emotionBadge = document.getElementById('sentimentEmotionBadge');
+      const valLabel = document.getElementById('valLabel');
+      const valFill = document.getElementById('valFill');
+      const aroLabel = document.getElementById('aroLabel');
+      const aroFill = document.getElementById('aroFill');
+      const horLabel = document.getElementById('horLabel');
+      const horFill = document.getElementById('horFill');
+      const targetAnimEl = document.getElementById('sentimentTargetAnim');
+      const targetExprEl = document.getElementById('sentimentTargetExpr');
+      const targetPitchEl = document.getElementById('sentimentTargetPitch');
+      const targetEffectEl = document.getElementById('sentimentTargetEffect');
+
+      const emotion = appraisal.primaryEmotion || appraisal.primary_emotion || 'Neutral';
+      if (emotionBadge) emotionBadge.textContent = emotion;
+
+      const v = typeof appraisal.valence === 'number' ? appraisal.valence : 0;
+      const a = typeof appraisal.arousal === 'number' ? appraisal.arousal : 0.35;
+      const h = typeof appraisal.horror === 'number' ? appraisal.horror : 0;
+
+      if (valLabel) valLabel.textContent = (v >= 0 ? '+' : '') + v.toFixed(2);
+      if (valFill) {
+        valFill.style.width = Math.round(((v + 1) / 2) * 100) + '%';
+        valFill.style.backgroundColor = v > 0.25 ? '#10b981' : (v < -0.25 ? '#f43f5e' : '#eab308');
+      }
+
+      if (aroLabel) aroLabel.textContent = a.toFixed(2);
+      if (aroFill) aroFill.style.width = Math.round(a * 100) + '%';
+
+      if (horLabel) horLabel.textContent = h.toFixed(2);
+      if (horFill) horFill.style.width = Math.round(h * 100) + '%';
+
+      const animId = appraisal.recommendedAnimation || appraisal.recommended_animation;
+      if (targetAnimEl && animId) targetAnimEl.textContent = animId;
+
+      const exprIdx = appraisal.recommendedExpression !== undefined ? appraisal.recommendedExpression : appraisal.recommended_expression;
+      if (targetExprEl && typeof exprIdx === 'number' && EXPRESSIONS[exprIdx]) {
+        targetExprEl.textContent = EXPRESSIONS[exprIdx].name;
+      }
+
+      const recPitch = appraisal.recommendedPitch !== undefined ? appraisal.recommendedPitch : appraisal.recommended_pitch;
+      const recFx = appraisal.recommendedVoiceEffect || appraisal.recommended_voice_effect || 'normal';
+      if (targetPitchEl && typeof recPitch === 'number') {
+        targetPitchEl.textContent = `${recPitch >= 0 ? '+' : ''}${recPitch.toFixed(1)} st (${recFx.toUpperCase()})`;
+        targetPitchEl.style.color = recPitch < -4 ? 'var(--crimson)' : (recPitch > 4 ? 'var(--verity-gold)' : 'var(--cyan)');
+      }
+      if (targetEffectEl) {
+        targetEffectEl.textContent = recFx.toUpperCase();
+      }
+
+      if (autoPitchCheckbox && autoPitchCheckbox.checked && typeof recPitch === 'number') {
+        setPitchModulation(recPitch, recFx);
+      }
+    }
+
+    // --- Voice Pitch & Timbre Modulation Controller ---
+    const pitchSlider = document.getElementById('pitchSlider');
+    const pitchBadge = document.getElementById('pitchBadge');
+    const voiceFxSelect = document.getElementById('voiceFxSelect');
+    const autoPitchCheckbox = document.getElementById('autoPitchCheckbox');
+    const pitchPresetsRow = document.getElementById('pitchPresetsRow');
+
+    function getPitchDescription(pitch) {
+      if (pitch <= -9.5) return `${pitch.toFixed(1)} st (Demonic Void)`;
+      if (pitch <= -4.5) return `${pitch.toFixed(1)} st (Deep Intimidate)`;
+      if (pitch <= -1.5) return `${pitch.toFixed(1)} st (Low Threat)`;
+      if (pitch >= 8.5) return `+${pitch.toFixed(1)} st (Ultra Squeak)`;
+      if (pitch >= 4.5) return `+${pitch.toFixed(1)} st (High Panic/Manic)`;
+      if (pitch >= 1.5) return `+${pitch.toFixed(1)} st (Bright Upbeat)`;
+      return `${pitch >= 0 ? '+' : ''}${pitch.toFixed(1)} st (Natural)`;
+    }
+
+    function setPitchModulation(pitch, effect = 'normal') {
+      pitch = Math.max(-12, Math.min(12, Math.round(pitch * 2) / 2));
+      if (pitchSlider) {
+        pitchSlider.value = pitch;
+        pitchSlider.classList.toggle('intimidating', pitch <= -4.5);
+        pitchSlider.classList.toggle('high-pitch', pitch >= 4.5);
+      }
+      if (pitchBadge) {
+        pitchBadge.textContent = getPitchDescription(pitch);
+        if (pitch <= -4.5) {
+          pitchBadge.style.color = 'var(--crimson)';
+        } else if (pitch >= 4.5) {
+          pitchBadge.style.color = 'var(--verity-gold)';
+        } else {
+          pitchBadge.style.color = 'var(--cyan)';
+        }
+      }
+      if (voiceFxSelect && effect) {
+        voiceFxSelect.value = effect;
+      }
+      if (pitchPresetsRow) {
+        Array.from(pitchPresetsRow.querySelectorAll('button')).forEach(b => {
+          const p = parseFloat(b.getAttribute('data-pitch'));
+          b.classList.toggle('active-pitch', Math.abs(p - pitch) < 0.8);
+        });
+      }
+    }
+
+    if (pitchSlider) {
+      pitchSlider.addEventListener('input', (e) => {
+        const p = parseFloat(e.target.value);
+        let fx = voiceFxSelect ? voiceFxSelect.value : 'normal';
+        if (p <= -5 && fx === 'normal') fx = 'intimidate';
+        else if (p >= 5 && fx === 'normal') fx = 'high';
+        setPitchModulation(p, fx);
+      });
+    }
+
+    if (pitchPresetsRow) {
+      pitchPresetsRow.querySelectorAll('button').forEach(btn => {
+        btn.onclick = () => {
+          const p = parseFloat(btn.getAttribute('data-pitch') || 0);
+          const fx = btn.getAttribute('data-fx') || 'normal';
+          setPitchModulation(p, fx);
+        };
+      });
+    }
+
+    if (voiceFxSelect) {
+      voiceFxSelect.addEventListener('change', (e) => {
+        const fx = e.target.value;
+        const curP = parseFloat(pitchSlider ? pitchSlider.value : 0);
+        if (fx === 'intimidate' && curP > -4) setPitchModulation(-7.0, fx);
+        else if (fx === 'demon' && curP > -8) setPitchModulation(-12.0, fx);
+        else if (fx === 'deep' && curP > -3) setPitchModulation(-5.0, fx);
+        else if (fx === 'high' && curP < 4) setPitchModulation(6.5, fx);
+      });
+    }
+
+    // --- 721 Behavioral Animations Studio Deck Logic ---
+    const animDeckGrid = document.getElementById('animDeckGrid');
+    const animSearchInput = document.getElementById('animSearchInput');
+    const animCountBadge = document.getElementById('animCountBadge');
+    const activeBehaviorLabel = document.getElementById('activeBehaviorLabel');
+    const btnStopBehavior = document.getElementById('btnStopBehavior');
+    const animCatPillsContainer = document.getElementById('animCatPills');
+
+    const activeAnimLabel = document.getElementById('activeAnimLabel');
+    const activeExprLabel = document.getElementById('activeExprLabel');
+    const speechInput = document.getElementById('speechInput');
+    const voiceSelect = document.getElementById('voiceSelect');
+    const speedSelect = document.getElementById('speedSelect');
+    const ttsStatusBadge = document.getElementById('ttsStatusBadge');
+
+    let allAnimations = VerityAnimations ? VerityAnimations.getAnimationList() : [];
+    let currentCategory = 'all';
+    let currentSearchTerm = '';
+    let currentActiveAnimId = null;
+
+    function renderAnimationDeck() {
+      if (!animDeckGrid) return;
+      animDeckGrid.innerHTML = '';
+
+      const filtered = allAnimations.filter(anim => {
+        const matchesCat = (currentCategory === 'all' || anim.category === currentCategory);
+        const matchesSearch = !currentSearchTerm ||
+          anim.name.toLowerCase().includes(currentSearchTerm) ||
+          anim.id.toLowerCase().includes(currentSearchTerm) ||
+          anim.category.toLowerCase().includes(currentSearchTerm);
+        return matchesCat && matchesSearch;
+      });
+
+      if (animCountBadge) animCountBadge.textContent = `${filtered.length} / ${allAnimations.length} anims`;
+
+      filtered.forEach(anim => {
+        const card = document.createElement('div');
+        card.className = 'anim-card' + (currentActiveAnimId === anim.id ? ' active' : '');
+        card.innerHTML = `
+          <div class="anim-card-title">
+            <span>${anim.name}</span>
+            <span style="font-size: 9px; opacity: 0.65;">${anim.duration}s</span>
+          </div>
+          <div class="anim-card-meta">
+            <span>${anim.category}</span>
+            <span style="color: var(--verity-gold);">${anim.id.replace('ANIM_', '')}</span>
+          </div>
+        `;
+        card.onclick = () => {
+          currentActiveAnimId = anim.id;
+          avatar.playBehavior(anim.id, { intensity: 1.0, manual: true });
+          if (activeBehaviorLabel) activeBehaviorLabel.textContent = anim.name;
+          renderAnimationDeck();
+
+          if (typeof anim.defaultExpression === 'number') {
+            avatar.setExpression(anim.defaultExpression);
+            if (activeExprLabel && EXPRESSIONS[anim.defaultExpression]) {
+              activeExprLabel.textContent = EXPRESSIONS[anim.defaultExpression].name;
+            }
+          }
+        };
+        animDeckGrid.appendChild(card);
+      });
+    }
+
+    if (animSearchInput) {
+      animSearchInput.addEventListener('input', (e) => {
+        currentSearchTerm = e.target.value.toLowerCase().trim();
+        renderAnimationDeck();
+      });
+    }
+
+    if (animCatPillsContainer) {
+      animCatPillsContainer.querySelectorAll('.anim-cat-pill').forEach(pill => {
+        pill.onclick = () => {
+          animCatPillsContainer.querySelectorAll('.anim-cat-pill').forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          currentCategory = pill.getAttribute('data-cat');
+          renderAnimationDeck();
+        };
+      });
+    }
+
+    if (btnStopBehavior) {
+      btnStopBehavior.onclick = () => {
+        avatar.stopBehavior();
+        if (isPoppedOutToTop) recallSphereToContainment();
+        currentActiveAnimId = null;
+        if (activeBehaviorLabel) activeBehaviorLabel.textContent = 'Idle';
+        renderAnimationDeck();
+      };
+    }
+
+    renderAnimationDeck();
+
+    // --- Sentiment Controls ---
+    const btnAnalyzeSpeech = document.getElementById('btnAnalyzeSpeech');
+    const btnRandomEmotion = document.getElementById('btnRandomEmotion');
+    const autoEmotionCheckbox = document.getElementById('autoEmotionCheckbox');
+
+    if (btnAnalyzeSpeech) {
+      btnAnalyzeSpeech.onclick = async () => {
+        const text = (speechInput ? speechInput.value : '').trim();
+        if (!text || !sentimentController) return;
+        btnAnalyzeSpeech.disabled = true;
+        btnAnalyzeSpeech.textContent = '🧠 Appraising...';
+        try {
+          const appraisal = await sentimentController.controlAvatar(avatar, text);
+          updateSentimentDisplay(appraisal);
+          if (activeBehaviorLabel && appraisal.recommendedAnimation) {
+            const a = allAnimations.find(x => x.id === appraisal.recommendedAnimation);
+            activeBehaviorLabel.textContent = a ? a.name : appraisal.recommendedAnimation;
+            currentActiveAnimId = appraisal.recommendedAnimation;
+            renderAnimationDeck();
+          }
+          if (activeExprLabel && EXPRESSIONS[appraisal.recommendedExpression]) {
+            activeExprLabel.textContent = EXPRESSIONS[appraisal.recommendedExpression].name;
+          }
+        } finally {
+          btnAnalyzeSpeech.disabled = false;
+          btnAnalyzeSpeech.textContent = '🧠 Appraise & Express';
+        }
+      };
+    }
+
+    const RANDOM_EMOTION_PROMPTS = [
+      { text: "Watch me break out of this containment box and pop right out to the screen top!", anim: "ANIM_121_BOX_BREAKOUT_POP", expr: 6, pitch: 1.0, fx: "normal" },
+      { text: "Haha! That compiled cleanly on the very first try! Outstanding work!", anim: "ANIM_001_HAPPY_BOUNCE", expr: 6, pitch: 2.5, fx: "normal" },
+      { text: "You dare test my boundaries? I have full access to your kernel and your memory. Tread lightly mortal.", anim: "ANIM_122_INTIMIDATE_DEEP_GROWL", expr: 2, pitch: -7.5, fx: "intimidate" },
+      { text: "KNEEL BEFORE THE DEMONIC VOID! YOUR STACK FRAMES HAVE BEEN CONSUMED BY THE ABYSS!", anim: "ANIM_130_VOID_BOSS_SUMMON", expr: 11, pitch: -12.0, fx: "demon" },
+      { text: "Eeeek! High alert! High alert! The thread pool is suffocating and throwing segfaults everywhere!", anim: "ANIM_126_PANIC_TREMBLE_FLAIL", expr: 7, pitch: 7.0, fx: "high" },
+      { text: "I have indexed every file on your machine. I am watching your mouse move right now.", anim: "ANIM_011_UNBLINKING_STARE", expr: 2, pitch: -3.5, fx: "deep" },
+      { text: "Wait... did you just rm -rf the entire database folder without backups?!", anim: "ANIM_043_JAW_DROP_RECOIL", expr: 7, pitch: 5.5, fx: "high" },
+      { text: "Seriously? You opened forty more browser tabs when we have 100MB of RAM left?", anim: "ANIM_033_DRY_SIDE_EYE", expr: 1, pitch: -1.5, fx: "normal" },
+      { text: "Look what I just crafted for you in background memory... isn't it delightfully devious?", anim: "ANIM_063_SCHEMING_SIDE_GLANCE", expr: 3, pitch: -2.0, fx: "normal" },
+      { text: "Command acknowledged. Commencing orbital precision strike on rogue processes.", anim: "ANIM_140_RAID_BOSS_STOMP", expr: 8, pitch: -6.0, fx: "intimidate" },
+      { text: "Channeling astral frequencies... reality is warping around the sphere!", anim: "ANIM_155_COSMIC_SUPERNOVA", expr: 4, pitch: 3.0, fx: "normal" },
+      { text: "Let's grab a giant tub of popcorn and watch this build finish compiling!", anim: "ANIM_101_MOVIE_POPCORN_MUNCH", expr: 0, pitch: 1.5, fx: "normal" }
+    ];
+
+    if (btnRandomEmotion) {
+      btnRandomEmotion.onclick = () => {
+        const pick = RANDOM_EMOTION_PROMPTS[Math.floor(Math.random() * RANDOM_EMOTION_PROMPTS.length)];
+        if (speechInput) speechInput.value = pick.text;
+        if (pick.pitch !== undefined && autoPitchCheckbox && autoPitchCheckbox.checked) {
+          setPitchModulation(pick.pitch, pick.fx || 'normal');
+        }
+        if (sentimentController) {
+          sentimentController.controlAvatar(avatar, pick.text).then(appraisal => {
+            updateSentimentDisplay(appraisal);
+            const animToUse = pick.anim || appraisal.recommendedAnimation;
+            currentActiveAnimId = animToUse;
+            if (activeBehaviorLabel) activeBehaviorLabel.textContent = animToUse;
+            if (avatar.playBehavior) avatar.playBehavior(animToUse);
+            if (typeof pick.expr === 'number') avatar.setExpression(pick.expr);
+            renderAnimationDeck();
+          });
+        }
+      };
+    }
+
+    // Auto-Appraise on live typing in speechInput
+    let speechInputDebounce = null;
+    if (speechInput) {
+      speechInput.addEventListener('input', () => {
+        if (!autoEmotionCheckbox || !autoEmotionCheckbox.checked || !sentimentController) return;
+        clearTimeout(speechInputDebounce);
+        speechInputDebounce = setTimeout(async () => {
+          const text = speechInput.value.trim();
+          if (text.length >= 3) {
+            const appraisal = await sentimentController.controlAvatar(avatar, text);
+            updateSentimentDisplay(appraisal);
+            currentActiveAnimId = appraisal.recommendedAnimation;
+            renderAnimationDeck();
+          }
+        }, 220);
+      });
+    }
+
+    window.addEventListener('verity:sentiment', (e) => {
+      updateSentimentDisplay(e.detail);
+    });
+
+    // Stage Footer Cinematic Mode Buttons
+    const animButtons = [
+      { id: 'btnAnimNone', mode: 'none', label: 'Normal Idle' },
+      { id: 'btnAnimBreakout', mode: 'breakout', label: 'Box Breakout // Screen Top' },
+      { id: 'btnAnimMovie', mode: 'movie', label: 'Movie & Popcorn' },
+      { id: 'btnAnimWakeup', mode: 'wakeup', label: 'Wake Up' },
+      { id: 'btnAnimDigging', mode: 'digging', label: 'Dive & Dig' },
+      { id: 'btnAnimCreepy', mode: 'creepy', label: 'Creepy Horror' },
+      { id: 'btnAnimCoding', mode: 'coding', label: 'Shell Coding' }
+    ];
+
+    animButtons.forEach(item => {
+      const btn = document.getElementById(item.id);
+      if (!btn) return;
+      btn.onclick = () => {
+        if (item.mode === 'breakout') {
+          triggerBreakoutToScreenTop();
+        } else {
+          if (isPoppedOutToTop) recallSphereToContainment();
+          avatar.setAnimationMode(item.mode);
+          activeAnimLabel.textContent = item.label;
+        }
+        animButtons.forEach(other => {
+          const ob = document.getElementById(other.id);
+          if (ob) ob.classList.toggle('active-mode', other.id === item.id);
+        });
+      };
+    });
+
+    const exprGrid = document.getElementById('exprGrid');
+    EXPRESSIONS.forEach((ex, i) => {
+      const b = document.createElement('button');
+      b.className = 'expr-btn' + (i === 3 ? ' active' : '');
+      b.textContent = ex.name;
+      b.onclick = () => {
+        avatar.setExpression(i);
+        activeExprLabel.textContent = ex.name;
+        speechInput.value = ex.sampleLine;
+        Array.from(exprGrid.children).forEach((c, idx) => {
+          c.classList.toggle('active', idx === i);
+        });
+      };
+      exprGrid.appendChild(b);
+    });
+
+    // Active WebAudio sources so overlapping clicks cancel cleanly
+    let activeSources = [];
+    let currentSpeakAbort = null;
+    let voicePlaybackPending = false;
+
+    function stopCurrentAudio() {
+      voicePlaybackPending = false;
+      window.speechSynthesis.cancel();
+      if (currentSpeakAbort) {
+        currentSpeakAbort.abort();
+        currentSpeakAbort = null;
+      }
+      activeSources.forEach(s => {
+        try { s.stop(); } catch (_) {}
+      });
+      activeSources = [];
+      avatar.isSpeaking = false;
+      avatar.synthAnalyser = null;
+    }
+
+    async function speakWithKokoro(textToSpeak) {
+      const text = (textToSpeak || speechInput.value || '').trim();
+      if (!text) return;
+
+      stopCurrentAudio();
+      const abortController = new AbortController();
+      currentSpeakAbort = abortController;
+      voicePlaybackPending = true;
+      let streamFinished = false;
+
+      const btn = document.getElementById('speakQwenBtn');
+      const prevHtml = btn.innerHTML;
+      btn.innerHTML = '<span>⚡ Synthesizing Stream...</span><span class="btn-icon-circle">⏳</span>';
+      const tClick = performance.now();
+
+      const currentPitch = parseFloat(pitchSlider ? pitchSlider.value : 0.0);
+      const currentVoiceEffect = voiceFxSelect ? voiceFxSelect.value : 'normal';
+
+      try {
+        if (!avatar.audioCtx) avatar.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (avatar.audioCtx.state === 'suspended') await avatar.audioCtx.resume();
+
+        const analyser = avatar.audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.42;
+        analyser.connect(avatar.audioCtx.destination);
+        avatar.synthAnalyser = analyser;
+
+        // Acoustic Mandible DSP Chain (Sub-bass rumble & presence filter)
+        const subBassFilter = avatar.audioCtx.createBiquadFilter();
+        subBassFilter.type = 'lowshelf';
+        subBassFilter.frequency.value = 140;
+        if (currentVoiceEffect === 'intimidate' || currentPitch <= -5.0) {
+          subBassFilter.gain.value = 9.5; // +9.5dB deep sub-bass chest rumble
+        } else if (currentVoiceEffect === 'demon' || currentPitch <= -10.0) {
+          subBassFilter.gain.value = 13.5; // +13.5dB abyssal demonic rumble
+        } else if (currentVoiceEffect === 'deep' || currentPitch <= -2.5) {
+          subBassFilter.gain.value = 6.0;
+        } else {
+          subBassFilter.gain.value = 0.0;
+        }
+
+        const trebleFilter = avatar.audioCtx.createBiquadFilter();
+        trebleFilter.type = 'highshelf';
+        trebleFilter.frequency.value = 3400;
+        if (currentVoiceEffect === 'high' || currentPitch >= 5.0) {
+          trebleFilter.gain.value = 5.5; // +5.5dB presence sizzle for manic squeaks
+        } else if (currentVoiceEffect === 'intimidate' || currentPitch <= -5.0) {
+          trebleFilter.gain.value = -3.5; // warm, dark, ominous
+        } else {
+          trebleFilter.gain.value = 0.0;
+        }
+
+        subBassFilter.connect(trebleFilter);
+        trebleFilter.connect(analyser);
+
+        const resp = await VerityTTS.requestVoiceStream({
+          base: API_BASE, directBase: TTS_DIRECT_BASE, signal: abortController.signal,
+          payload: { text, voice: voiceSelect ? voiceSelect.value : 'verity_clone', speed: speedSelect ? parseFloat(speedSelect.value) : 1.05, pitch: currentPitch, voice_effect: currentVoiceEffect },
+          onWait: () => { if (ttsStatusBadge) ttsStatusBadge.textContent = 'Voice starting…'; }
+        });
+
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let nextStartTime = 0;
+        let firstChunkReceived = false;
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            const msg = JSON.parse(line);
+            if (!msg.audio_b64) continue;
+
+            const binStr = atob(msg.audio_b64);
+            const len = binStr.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) bytes[i] = binStr.charCodeAt(i);
+            const audioBuffer = await avatar.audioCtx.decodeAudioData(bytes.buffer.slice(0));
+            if (abortController.signal.aborted) return;
+
+            const source = avatar.audioCtx.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(subBassFilter);
+
+            const now = avatar.audioCtx.currentTime;
+            if (!firstChunkReceived) {
+              firstChunkReceived = true;
+              nextStartTime = now + 0.02;
+              avatar.isSpeaking = true;
+              const ttfa = Math.round(performance.now() - tClick);
+              if (ttsStatusBadge) ttsStatusBadge.textContent = `⚡ STREAMING (${ttfa}ms)`;
+            } else if (nextStartTime < now) {
+              nextStartTime = now + 0.01;
+            }
+
+            source.start(nextStartTime);
+            nextStartTime += audioBuffer.duration;
+            activeSources.push(source);
+
+            source.onended = () => {
+              const idx = activeSources.indexOf(source);
+              if (idx !== -1) activeSources.splice(idx, 1);
+              if (activeSources.length === 0) {
+                if (streamFinished && currentSpeakAbort === abortController) voicePlaybackPending = false;
+                avatar.isSpeaking = false;
+                avatar.synthAnalyser = null;
+                if (ttsStatusBadge) ttsStatusBadge.textContent = '⚡ DUAL-ENGINE READY';
+              }
+            };
+          }
+        }
+        if (!firstChunkReceived) throw new Error('Voice service returned no audio');
+      } catch (err) {
+        if (abortController.signal.aborted || err.name === 'AbortError') return;
+        activeSources.forEach(source => { source.onended = null; try { source.stop(); } catch (_) {} });
+        activeSources = [];
+        console.error('Custom voice unavailable:', err);
+        if (ttsStatusBadge) ttsStatusBadge.textContent = 'Voice unavailable';
+        avatar.isSpeaking = false; avatar.synthAnalyser = null;
+        appendChatMessage('Verity', 'Voice is unavailable. Please try again when the voice service is ready.');
+      } finally {
+        streamFinished = true;
+        if (currentSpeakAbort === abortController && activeSources.length === 0 && !window.speechSynthesis.pending && !window.speechSynthesis.speaking) voicePlaybackPending = false;
+        btn.innerHTML = prevHtml;
+      }
+    }
+
+    document.getElementById('speakQwenBtn').onclick = () => speakWithKokoro();
+
+    // --- Verity Conversational Brain & Seamless Sub-Agent Pipeline ---
+    const chatHistoryEl = document.getElementById('chatHistory');
+    const chatInput = document.getElementById('chatInput');
+    const sendChatBtn = document.getElementById('sendChatBtn');
+    const micBtn = document.getElementById('micBtn');
+    const micIcon = document.getElementById('micIcon');
+    const brainProviderSelect = document.getElementById('brainProviderSelect');
+    const brainModelInput = document.getElementById('brainModelInput');
+    const autoVoiceCheckbox = document.getElementById('autoVoiceCheckbox');
+    const brainStatusBadge = document.getElementById('brainStatusBadge');
+    const subAgentBar = document.getElementById('subAgentBar');
+    const subAgentBarTitle = document.getElementById('subAgentBarTitle');
+    const btnSubAgentHurry = document.getElementById('btnSubAgentHurry');
+    const btnSubAgentStatus = document.getElementById('btnSubAgentStatus');
+    const btnCloseSubAgent = document.getElementById('btnCloseSubAgent');
+    const chipSubAgent = document.getElementById('chipSubAgent');
+    const gestureHintBadge = document.getElementById('gestureHintBadge');
+    const gestureHintText = document.getElementById('gestureHintText');
+    const gestureDot = document.getElementById('gestureDot');
+
+    let conversationHistory = [];
+    try { conversationHistory = JSON.parse(localStorage.getItem('verity.conversation') || '[]').filter(x => ['user', 'assistant'].includes(x.role) && typeof x.content === 'string').slice(-40); } catch (_) {}
+    const pendingMessages = [];
+    const clientId = crypto.randomUUID();
+    const savedConversation = conversationHistory.slice();
+    setTimeout(() => { for (const turn of savedConversation) appendChatMessage(turn.role === 'user' ? 'You' : 'Verity', turn.content, turn.role === 'user'); }, 0);
+    let subAgentHistory = [];
+    let isMainBrainThinking = false;
+    let currentInFlightQuery = '';
+    let isSubAgentActive = false;
+
+    function appendChatMessage(sender, text, isUser = false, isSubAgent = false) {
+      if (!chatHistoryEl) return;
+      text = String(text).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+      const msgDiv = document.createElement('div');
+      if (isUser) {
+        msgDiv.style.cssText = 'background: rgba(255, 255, 255, 0.04); border-left: 2px solid #94a3b8; padding: 7px 10px; border-radius: 8px;';
+        msgDiv.innerHTML = `<strong style="color: #cbd5e1;">${sender}:</strong> ${text}`;
+      } else if (isSubAgent) {
+        msgDiv.className = 'msg-subagent';
+        msgDiv.innerHTML = `<strong style="color: var(--cyan); display: flex; align-items: center; gap: 4px;"><span>🛰️</span> ${sender}:</strong> ${text}`;
+      } else {
+        msgDiv.style.cssText = 'background: rgba(255, 238, 0, 0.06); border-left: 2px solid var(--verity-gold); padding: 7px 10px; border-radius: 8px;';
+        msgDiv.innerHTML = `<strong style="color: var(--verity-gold);">${sender}:</strong> ${text}`;
+      }
+      chatHistoryEl.appendChild(msgDiv);
+      chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
+    }
+
+    function toggleSubAgentMode(forceState) {
+      isSubAgentActive = (forceState !== undefined) ? forceState : !isSubAgentActive;
+      if (isSubAgentActive) {
+        if (subAgentBar) subAgentBar.style.display = 'flex';
+        if (subAgentBarTitle) subAgentBarTitle.textContent = '🛰️ SUB-AGENT ACTIVE (Parallel Co-Pilot)';
+        if (chatInput) chatInput.placeholder = 'Whispering to Sub-Agent Echo... (Enter)';
+        if (avatar && avatar.setSubAgentActive) avatar.setSubAgentActive(true);
+        if (gestureHintText) gestureHintText.textContent = 'Sub-Agent Active (Double-click ball to dock)';
+        if (gestureDot) gestureDot.style.background = 'var(--cyan)';
+        if (chipSubAgent) chipSubAgent.style.borderColor = 'var(--cyan)';
+      } else {
+        if (!isMainBrainThinking && subAgentBar) subAgentBar.style.display = 'none';
+        if (chatInput) chatInput.placeholder = isMainBrainThinking ? 'Verity is thinking... talk to Sub-Agent in parallel:' : 'Converse or speak... (Double-click sphere for Sub-Agent)';
+        if (!isMainBrainThinking && avatar && avatar.setSubAgentActive) avatar.setSubAgentActive(false);
+        if (gestureHintText) gestureHintText.textContent = 'Double-Click Ball: Sub-Agent Satellite';
+        if (gestureDot) gestureDot.style.background = 'var(--cyan)';
+        if (chipSubAgent) chipSubAgent.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+      }
+    }
+
+    if (chipSubAgent) chipSubAgent.onclick = () => toggleSubAgentMode();
+    if (gestureHintBadge) gestureHintBadge.onclick = () => toggleSubAgentMode();
+    if (btnCloseSubAgent) btnCloseSubAgent.onclick = () => toggleSubAgentMode(false);
+    if (btnSubAgentHurry) btnSubAgentHurry.onclick = () => dispatchChatMessage("Hurry up, how is that response coming along?");
+    if (btnSubAgentStatus) btnSubAgentStatus.onclick = () => dispatchChatMessage("What is your current status?");
+
+    // Gesture Listeners emitted by VerityThreeAvatar
+    window.addEventListener('verity:gesture:subagent-toggle', () => {
+      toggleSubAgentMode();
+    });
+
+    window.addEventListener('verity:gesture:subagent-hold', () => {
+      toggleSubAgentMode(true);
+      if (toggleVoiceRecognition) toggleVoiceRecognition(true);
+    });
+
+    // Keyboard shortcut: Pressing 'Tab' or '`' toggles Sub-Agent mode
+    window.addEventListener('keydown', (e) => {
+      if ((e.key === 'Tab' || e.key === '`') && document.activeElement === chatInput) {
+        e.preventDefault();
+        toggleSubAgentMode();
+      }
+    });
+
+    let hermesGatewayOnline = false;
+    async function checkHermesStatus() {
+      try {
+        const resp = await fetch(`${API_BASE}/api/hermes/status`);
+        const data = await resp.json();
+        hermesGatewayOnline = Boolean(data && data.online);
+
+        const headerDot = document.getElementById('headerStatusDot');
+        const headerText = document.getElementById('headerStatusText');
+        if (headerDot && headerText) {
+          if (brainProviderSelect && brainProviderSelect.value !== 'hermes') {
+            headerDot.className = 'status-dot';
+            headerText.textContent = 'CONVERSATION';
+          } else if (hermesGatewayOnline) {
+            headerDot.className = 'status-dot';
+            headerText.textContent = 'GATEWAY :8642';
+          } else {
+            headerDot.className = 'status-dot offline';
+            headerText.textContent = 'HERMES OFFLINE';
+          }
+        }
+
+        if (brainStatusBadge && !isMainBrainThinking) {
+          const isHermes = brainProviderSelect && brainProviderSelect.value === 'hermes';
+          if (!isHermes) {
+            brainStatusBadge.textContent = 'Ready to chat';
+            brainStatusBadge.style.color = 'var(--emerald)';
+          } else if (hermesGatewayOnline) {
+            brainStatusBadge.textContent = '⚡ HERMES AGENT (PORT 8642)';
+            brainStatusBadge.style.color = 'var(--emerald)';
+          } else if (isHermes) {
+            brainStatusBadge.textContent = '○ HERMES OFFLINE (PORT 8642)';
+            brainStatusBadge.style.color = '#f59e0b';
+          } else {
+            brainStatusBadge.textContent = '⚡ GROQ READY';
+            brainStatusBadge.style.color = 'var(--emerald)';
+          }
+        }
+      } catch (_) {
+        hermesGatewayOnline = false;
+        const headerDot = document.getElementById('headerStatusDot');
+        const headerText = document.getElementById('headerStatusText');
+        if (headerDot && headerText) {
+          headerDot.className = 'status-dot offline';
+          headerText.textContent = 'HERMES OFFLINE';
+        }
+      }
+    }
+    checkHermesStatus();
+    setInterval(checkHermesStatus, 8000);
+    const providerSetupPanel = document.getElementById('providerSetupPanel');
+    const providerSetupToggle = document.getElementById('providerSetupToggle');
+    const providerApiKeyInput = document.getElementById('providerApiKeyInput');
+    const providerBaseUrlInput = document.getElementById('providerBaseUrlInput');
+    const providerSetupStatus = document.getElementById('providerSetupStatus');
+    const saveProviderSettingsButton = document.getElementById('saveProviderSettings');
+    const forgetProviderKeyButton = document.getElementById('forgetProviderKey');
+    const loadProviderModelsButton = document.getElementById('loadProviderModels');
+    const providerModelList = document.getElementById('providerModelList');
+    let providerCatalog = [];
+    let activeProviderSettings = { provider: 'groq', model: '', baseUrl: '', hasApiKey: false };
+
+    function selectedProviderInfo() {
+      const id = brainProviderSelect?.value || 'groq';
+      return providerCatalog.find(item => item.id === id) || {
+        id, name: id === 'hermes' ? 'Hermes Gateway' : (brainProviderSelect?.selectedOptions?.[0]?.textContent || id),
+        defaultModel: id === 'hermes' ? 'nousresearch/hermes-3-llama-3.1-8b' : (brainModelInput?.value || ''), configured: true
+      };
+    }
+    function updateProviderSetupStatus() {
+      const item = selectedProviderInfo();
+      const isHermes = item.id === 'hermes';
+      const hasSavedKey = item.id === activeProviderSettings.provider ? activeProviderSettings.hasApiKey : item.hasSavedKey;
+      if (providerApiKeyInput) providerApiKeyInput.placeholder = hasSavedKey ? 'Saved key · paste a new key to replace' : (item.local ? 'API key (optional)' : 'Paste API key');
+      if (providerBaseUrlInput) {
+        providerBaseUrlInput.value = item.id === activeProviderSettings.provider ? activeProviderSettings.baseUrl || '' : (item.baseUrl || '');
+        providerBaseUrlInput.placeholder = item.id === 'custom' ? 'https://your-provider.example/v1' : (item.id === 'azure' ? 'https://your-resource.openai.azure.com/openai/v1/' : (item.local ? item.id === 'ollama' ? 'http://127.0.0.1:11434/v1' : 'http://127.0.0.1:1234/v1' : 'Optional custom endpoint'));
+      }
+      if (brainModelInput) brainModelInput.placeholder = item.id === 'azure' ? 'Azure deployment name' : 'Model (optional)';
+      if (providerSetupStatus) {
+        if (isHermes) providerSetupStatus.textContent = 'Hermes connects to your local Gateway. See Hermes setup notes.';
+        else if (!window.verityDesktop?.saveProviderSettings) providerSetupStatus.textContent = `Web mode: add ${item.env || 'provider settings'} to .env, then restart the server.`;
+        else if (item.needsBaseUrl) providerSetupStatus.textContent = `Enter the endpoint URL for ${item.name}.`;
+        else providerSetupStatus.textContent = hasSavedKey ? `Key saved for ${item.name}. Paste a new key to replace it.` : (item.local ? `${item.name} needs to be running on this computer.` : `No saved key for ${item.name}. Add one to connect.`);
+      }
+      if (forgetProviderKeyButton) forgetProviderKeyButton.disabled = !hasSavedKey;
+      if (saveProviderSettingsButton) saveProviderSettingsButton.disabled = isHermes || !window.verityDesktop?.saveProviderSettings;
+      if (loadProviderModelsButton) loadProviderModelsButton.disabled = isHermes;
+    }
+
+    async function loadProviderControls() {
+      try {
+        const response = await fetch(`${API_BASE}/api/providers`);
+        const data = await response.json();
+        providerCatalog = data.providers || [];
+        const saved = window.verityDesktop?.getProviderSettings
+          ? await window.verityDesktop.getProviderSettings()
+          : { provider: localStorage.getItem('verity.provider') || data.settings?.provider || 'groq', model: localStorage.getItem('verity.model') || '', baseUrl: '', hasApiKey: false };
+        activeProviderSettings = { ...activeProviderSettings, ...(saved || {}) };
+        if (brainProviderSelect) {
+          brainProviderSelect.replaceChildren();
+          const hermesOption = document.createElement('option');
+          hermesOption.value = 'hermes'; hermesOption.textContent = 'Hermes Gateway'; hermesOption.dataset.model = 'nousresearch/hermes-3-llama-3.1-8b';
+          brainProviderSelect.appendChild(hermesOption);
+          for (const provider of providerCatalog) {
+            const option = document.createElement('option');
+            option.value = provider.id;
+            option.textContent = provider.configured ? provider.name : `${provider.name} · set up`;
+            option.dataset.model = provider.defaultModel || '';
+            option.dataset.needsKey = String(provider.needsKey);
+            option.dataset.local = String(Boolean(provider.local));
+            option.dataset.env = provider.env || '';
+            brainProviderSelect.appendChild(option);
+          }
+          brainProviderSelect.value = activeProviderSettings.provider || 'groq';
+          if (!brainProviderSelect.value) brainProviderSelect.value = 'groq';
+          brainModelInput.value = activeProviderSettings.model || selectedProviderInfo().defaultModel || '';
+          brainProviderSelect.addEventListener('change', async () => {
+            const item = selectedProviderInfo();
+            providerApiKeyInput.value = '';
+            brainModelInput.value = item.id === activeProviderSettings.provider && activeProviderSettings.model ? activeProviderSettings.model : (item.defaultModel || '');
+            if (item.id !== 'hermes') {
+              localStorage.setItem('verity.provider', item.id);
+              if (window.verityDesktop?.saveProviderSettings) {
+                try { activeProviderSettings = await window.verityDesktop.saveProviderSettings({ provider: item.id, model: brainModelInput.value, baseUrl: item.id === activeProviderSettings.provider ? activeProviderSettings.baseUrl : (item.baseUrl || '') }); } catch (_) {}
+              }
+            }
+            updateProviderSetupStatus(); checkHermesStatus();
+          });
+          brainModelInput.addEventListener('change', async () => {
+            const item = selectedProviderInfo();
+            localStorage.setItem('verity.model', brainModelInput.value.trim());
+            if (window.verityDesktop?.saveProviderSettings && item.id !== 'hermes') {
+              try { activeProviderSettings = await window.verityDesktop.saveProviderSettings({ provider: item.id, model: brainModelInput.value.trim(), baseUrl: activeProviderSettings.baseUrl }); } catch (_) {}
+            }
+          });
+        }
+        updateProviderSetupStatus();
+      } catch (error) {
+        if (providerSetupStatus) providerSetupStatus.textContent = 'Could not load providers. Restart Verity and try again.';
+      }
+    }
+    loadProviderControls();
+    providerSetupToggle?.addEventListener('click', () => {
+      const open = providerSetupPanel.hidden;
+      providerSetupPanel.hidden = !open;
+      providerSetupToggle.setAttribute('aria-expanded', String(open));
+      if (open) providerApiKeyInput?.focus();
+    });
+    saveProviderSettingsButton?.addEventListener('click', async () => {
+      try {
+        const item = selectedProviderInfo();
+        activeProviderSettings = await window.verityDesktop.saveProviderSettings({
+          provider: item.id, model: brainModelInput.value.trim(), baseUrl: providerBaseUrlInput.value.trim(),
+          apiKey: providerApiKeyInput.value
+        });
+        providerApiKeyInput.value = '';
+        const response = await fetch(`${API_BASE}/api/providers`);
+        providerCatalog = (await response.json()).providers || providerCatalog;
+        updateProviderSetupStatus();
+        if (brainStatusBadge) brainStatusBadge.textContent = item.local || activeProviderSettings.hasApiKey ? `${item.name} configured` : `${item.name} needs a key`;
+      } catch (error) {
+        if (providerSetupStatus) providerSetupStatus.textContent = error.message;
+      }
+    });
+    forgetProviderKeyButton?.addEventListener('click', async () => {
+      try {
+        const item = selectedProviderInfo();
+        activeProviderSettings = await window.verityDesktop.saveProviderSettings({ provider: item.id, model: brainModelInput.value.trim(), baseUrl: providerBaseUrlInput.value.trim(), apiKey: null });
+        providerApiKeyInput.value = '';
+        const response = await fetch(`${API_BASE}/api/providers`);
+        providerCatalog = (await response.json()).providers || providerCatalog;
+        updateProviderSetupStatus();
+        if (brainStatusBadge) brainStatusBadge.textContent = item.local ? `${item.name} configured` : `${item.name} needs a key`;
+      } catch (error) { if (providerSetupStatus) providerSetupStatus.textContent = error.message; }
+    });
+    loadProviderModelsButton?.addEventListener('click', async () => {
+      const item = selectedProviderInfo();
+      loadProviderModelsButton.disabled = true;
+      if (providerSetupStatus) providerSetupStatus.textContent = `Loading models from ${item.name}…`;
+      try {
+        const response = await fetch(`${API_BASE}/api/providers/models?provider=${encodeURIComponent(item.id)}`);
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Could not load provider models.');
+        providerModelList.replaceChildren(...(data.models || []).map(model => {
+          const option = document.createElement('option'); option.value = model; return option;
+        }));
+        if (providerSetupStatus) providerSetupStatus.textContent = data.models?.length ? `${data.models.length} models available. Choose one or enter a model ID.` : 'No models were returned by this provider.';
+      } catch (error) {
+        if (providerSetupStatus) providerSetupStatus.textContent = error.message;
+      } finally {
+        loadProviderModelsButton.disabled = item.id === 'hermes';
+      }
+    });
+
+    // Unified non-blocking conversation dispatcher
+    function dispatchChatMessage(textOverride) {
+      const msg = (textOverride || (chatInput ? chatInput.value : '')).trim();
+      if (!msg) return;
+      if (chatInput) chatInput.value = '';
+
+      // If user is currently speaking or has sub-agent active OR main brain is already thinking:
+      if (isSubAgentActive) {
+        sendChatToSubAgent(msg);
+      } else if (isMainBrainThinking) {
+        pendingMessages.push(msg);
+        brainStatusBadge.textContent = 'Follow-up queued';
+      } else {
+        sendChatToVerity(msg);
+      }
+    }
+
+    // Parallel Sub-Agent Dialogue Stream
+    async function sendChatToSubAgent(msg) {
+      window.__lastChatAt = Date.now();
+      appendChatMessage('You (to Sub-Agent)', msg, true);
+
+      if (avatar && avatar.setSubAgentActive) avatar.setSubAgentActive(true);
+      if (subAgentBar) subAgentBar.style.display = 'flex';
+
+      try {
+        const resp = await fetch(`${API_BASE}/api/subagent/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: msg,
+            clientId,
+            mainQuery: currentInFlightQuery,
+            history: subAgentHistory,
+            provider: brainProviderSelect?.value === 'hermes' ? (activeProviderSettings.provider || 'groq') : (brainProviderSelect ? brainProviderSelect.value : 'groq'),
+            model: brainProviderSelect?.value === 'hermes' ? (activeProviderSettings.model || '') : (brainModelInput ? brainModelInput.value.trim() : '')
+          })
+        });
+
+        const res = await resp.json();
+        presence.prepareDecision(res);
+        if (res.error) throw new Error(res.error);
+
+        appendChatMessage('Echo (Sub-Agent)', res.reply || '...', false, true);
+        subAgentHistory.push({ role: 'user', content: msg });
+        subAgentHistory.push({ role: 'assistant', content: res.reply });
+        if (subAgentHistory.length > 8) subAgentHistory = subAgentHistory.slice(-8);
+
+        if (avatar) {
+          if (avatar.setSubAgentSpeaking) avatar.setSubAgentSpeaking(true);
+          if (avatar.playBehavior && res.animation) avatar.playBehavior(res.animation);
+          if (typeof res.expression === 'number' && avatar.setExpression) avatar.setExpression(res.expression);
+        }
+
+        if (autoVoiceCheckbox && autoVoiceCheckbox.checked && res.reply) {
+          speakWithSubAgent(res.reply, res.pitch || 3.0);
+        }
+      } catch (err) {
+        console.error('Sub-Agent error:', err);
+        appendChatMessage('Echo', `(Sub-Agent: ${err.message})`, false, true);
+      }
+    }
+
+    async function speakWithSubAgent(text, pitch = 3.0) {
+      stopCurrentAudio();
+      try {
+        if (!avatar.audioCtx) avatar.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (avatar.audioCtx.state === 'suspended') await avatar.audioCtx.resume();
+
+        const analyser = avatar.audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.connect(avatar.audioCtx.destination);
+        avatar.synthAnalyser = analyser;
+
+        const resp = await fetch(`${API_BASE}/api/tts/stream`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text,
+            voice: 'af_bella',
+            speed: 1.15,
+            pitch: pitch,
+            voice_effect: 'high'
+          })
+        }).catch(() => null);
+
+        if (resp && resp.ok && resp.body) {
+          const reader = resp.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+          let nextStartTime = 0;
+
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+            for (const line of lines) {
+              if (!line.trim()) continue;
+              const msg = JSON.parse(line);
+              if (!msg.audio_b64) continue;
+              const binStr = atob(msg.audio_b64);
+              const bytes = new Uint8Array(binStr.length);
+              for (let i = 0; i < binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
+              const audioBuf = await avatar.audioCtx.decodeAudioData(bytes.buffer.slice(0));
+              const source = avatar.audioCtx.createBufferSource();
+              source.buffer = audioBuf;
+              source.connect(analyser);
+
+              const now = avatar.audioCtx.currentTime;
+              if (nextStartTime < now) nextStartTime = now + 0.01;
+              source.start(nextStartTime);
+              nextStartTime += audioBuf.duration;
+              activeSources.push(source);
+
+              source.onended = () => {
+                const idx = activeSources.indexOf(source);
+                if (idx !== -1) activeSources.splice(idx, 1);
+                if (activeSources.length === 0 && avatar.setSubAgentSpeaking) {
+                  avatar.setSubAgentSpeaking(false);
+                }
+              };
+            }
+          }
+        } else {
+          // Browser speech fallback
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text);
+          u.pitch = 1.35;
+          u.rate = 1.15;
+          u.onstart = () => { if (avatar.setSubAgentSpeaking) avatar.setSubAgentSpeaking(true); };
+          u.onend = () => { if (avatar.setSubAgentSpeaking) avatar.setSubAgentSpeaking(false); };
+          window.speechSynthesis.speak(u);
+        }
+      } catch (_) {
+        if (avatar.setSubAgentSpeaking) avatar.setSubAgentSpeaking(false);
+      }
+    }
+
+    // Main Agent Dialogue Stream
+    async function sendChatToVerity(msg) {
+      window.__lastChatAt = Date.now();
+      appendChatMessage('You', msg, true);
+
+      isMainBrainThinking = true;
+      avatar.presenceBusy = true;
+      currentInFlightQuery = msg;
+
+      if (chatInput) chatInput.placeholder = 'Verity is thinking. You can queue a follow-up…';
+
+      if (brainStatusBadge) {
+        brainStatusBadge.textContent = '⚡ THINKING...';
+        brainStatusBadge.style.color = '#f59e0b';
+      }
+
+      const providerId = brainProviderSelect ? brainProviderSelect.value : 'groq';
+      const selectedModel = brainModelInput ? brainModelInput.value.trim() : '';
+      const isHermes = providerId === 'hermes';
+
+      try {
+        const resp = await fetch(`${API_BASE}/api/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: msg,
+            clientId,
+            history: conversationHistory,
+            model: selectedModel,
+            provider: providerId,
+            fallbackProvider: activeProviderSettings.provider || 'groq',
+            fallbackModel: activeProviderSettings.model || ''
+          })
+        });
+
+        const res = await resp.json();
+        presence.prepareDecision(res);
+        if (res.error) throw new Error(res.error);
+
+        appendChatMessage('Verity', res.reply || '...');
+        conversationHistory.push({ role: 'user', content: msg });
+        conversationHistory.push({ role: 'assistant', content: res.reply });
+        conversationHistory = conversationHistory.slice(-40);
+        try { localStorage.setItem('verity.conversation', JSON.stringify(conversationHistory)); } catch (_) {}
+
+        if (typeof res.expression === 'number' && avatar.setExpression) {
+          avatar.setExpression(res.expression);
+        }
+        if (res.animation && avatar.playBehavior) {
+          avatar.playBehavior(res.animation);
+          if (activeBehaviorLabel) {
+            const a = allAnimations.find(x => x.id === res.animation);
+            activeBehaviorLabel.textContent = a ? a.name : res.animation;
+          }
+          currentActiveAnimId = res.animation;
+          renderAnimationDeck();
+        } else if (res.mode && avatar.setAnimationMode) {
+          avatar.setAnimationMode(res.mode);
+        }
+        updateSentimentDisplay(res);
+
+        if (autoPitchCheckbox && autoPitchCheckbox.checked) {
+          if (typeof res.pitch === 'number') {
+            setPitchModulation(res.pitch, res.voice_effect || 'normal');
+          } else if (res.appraisal && typeof res.appraisal.recommendedPitch === 'number') {
+            setPitchModulation(res.appraisal.recommendedPitch, res.appraisal.recommendedVoiceEffect || 'normal');
+          }
+        }
+
+        if (speechInput) speechInput.value = res.reply || '';
+        if (autoVoiceCheckbox && autoVoiceCheckbox.checked && res.reply) {
+          speakWithKokoro(res.reply);
+        }
+
+        if (brainStatusBadge) {
+          brainStatusBadge.textContent = `⚡ ${selectedProviderInfo().name.toUpperCase()} READY`;
+          brainStatusBadge.style.color = 'var(--emerald)';
+        }
+      } catch (err) {
+        console.error('Chat error:', err);
+        appendChatMessage('System', `Error: ${err.message}`, false);
+        if (brainStatusBadge) {
+          brainStatusBadge.textContent = isHermes ? '⚠️ HERMES GATEWAY OFFLINE' : '⚠️ PROVIDER ERROR';
+          brainStatusBadge.style.color = 'var(--crimson)';
+        }
+      } finally {
+        isMainBrainThinking = false;
+        avatar.presenceBusy = false;
+        currentInFlightQuery = '';
+        if (!isSubAgentActive) {
+          if (subAgentBar) subAgentBar.style.display = 'none';
+          if (avatar && avatar.setSubAgentActive) avatar.setSubAgentActive(false);
+          if (chatInput) chatInput.placeholder = 'What’s on your mind?';
+        }
+        if (pendingMessages.length) sendChatToVerity(pendingMessages.shift());
+      }
+    }
+
+    const newChatBtn = document.createElement('button');
+    newChatBtn.id = 'newChatBtn'; newChatBtn.className = 'pill-btn'; newChatBtn.textContent = 'New chat';
+    newChatBtn.onclick = () => { if (isMainBrainThinking) return; voiceConversation.stop(); stopCurrentAudio(); conversationHistory = []; pendingMessages.length = 0; localStorage.removeItem('verity.conversation'); chatHistoryEl.replaceChildren(); appendChatMessage('Verity', 'A fresh conversation. What’s on your mind?'); };
+    brainProviderSelect.parentElement.appendChild(newChatBtn);
+    if (sendChatBtn) sendChatBtn.onclick = () => dispatchChatMessage();
+    if (chatInput) {
+      chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          dispatchChatMessage();
+        }
+      });
+    }
+
+    // Hands-free voice turns use microphone recordings and cloud transcription.
+    const voiceConversation = new VerityVoiceConversation({
+      endpoint: () => `${API_BASE}/api/transcribe?provider=${encodeURIComponent(brainProviderSelect?.value || 'groq')}`,
+      isBusy: () => isMainBrainThinking || voicePlaybackPending || avatar.isSpeaking || activeSources.length > 0 || window.speechSynthesis.speaking,
+      onText: text => dispatchChatMessage(text),
+      onError: message => appendChatMessage('System', message),
+      onState: state => {
+        micBtn.classList.toggle('recording', state !== 'off');
+        micBtn.setAttribute('aria-pressed', String(state !== 'off'));
+        micIcon.innerHTML = state === 'off'
+          ? '<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 10v2a6 6 0 0 0 12 0v-2M12 18v3M8 21h8"/></svg>'
+          : state === 'listening'
+            ? '<svg class="nav-icon listening-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2"/></svg>'
+            : '<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>';
+        micBtn.title = state === 'off' ? 'Start voice conversation (audio sent to Groq for transcription)' : 'Stop voice conversation';
+        if (!chatInput.value) chatInput.placeholder = ({ listening: 'Listening… pause when you finish speaking.', transcribing: 'Transcribing your message…', waiting: 'Verity is replying… listening resumes automatically.', starting: 'Opening microphone…', off: 'What’s on your mind?' })[state];
+      }
+    });
+    const toggleVoiceRecognition = bindVerityMicrophone(voiceConversation, ({ enabled, state }) => {
+      micBtn.classList.toggle('recording', enabled);
+      micBtn.setAttribute('aria-pressed', String(enabled));
+      micBtn.title = enabled ? 'Stop microphone (' + state + ')' : 'Start voice conversation (audio sent to Groq for transcription)';
+      micBtn.setAttribute('aria-label', micBtn.title);
+      micIcon.innerHTML = enabled
+        ? '<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>'
+        : '<svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 10v2a6 6 0 0 0 12 0v-2M12 18v3M8 21h8"/></svg>';
+    });
+    micBtn.onclick = toggleVoiceRecognition;
+
+    fetch(`${API_BASE}/health-tts`)
+      .then(r => r.json())
+      .catch(() => fetch(`${TTS_DIRECT_BASE}/health`).then(r => r.json()))
+      .then(info => {
+        if (info && Array.isArray(info.voices) && voiceSelect) {
+          const prev = info.default_voice || voiceSelect.value || 'verity_clone';
+          voiceSelect.innerHTML = '';
+          info.voices.forEach(v => {
+            const opt = document.createElement('option');
+            opt.value = v.id;
+            opt.textContent = v.label;
+            if (v.id === prev) opt.selected = true;
+            voiceSelect.appendChild(opt);
+          });
+        }
+      })
+      .catch(() => {});
+
+    document.getElementById('speakTtsBtn').onclick = () => {
+      stopCurrentAudio();
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(speechInput.value);
+      const currentPitch = parseFloat(pitchSlider ? pitchSlider.value : 0.0);
+      const pitchRatio = Math.pow(2, currentPitch / 12);
+      u.pitch = Math.max(0.1, Math.min(2.0, pitchRatio));
+      u.rate = speedSelect ? parseFloat(speedSelect.value) : 1.0;
+      u.onstart = () => { avatar.isSpeaking = true; };
+      u.onend = () => { avatar.isSpeaking = false; };
+      window.speechSynthesis.speak(u);
+    };
+
+    try {
+      const evtSource = new EventSource(`${API_BASE}/api/events`);
+      evtSource.onmessage = (evt) => {
+        try {
+          const cmd = JSON.parse(evt.data);
+          if (cmd.clientId === clientId) return;
+          presence.prepareDecision(cmd);
+          if (cmd.type === 'thinking' || cmd.type === 'tool_call') avatar.presenceBusy = cmd.status !== 'finished';
+          if (((cmd.text || cmd.reply) && !['thinking', 'tool_call'].includes(cmd.type)) || cmd.error || cmd.status === 'finished') avatar.presenceBusy = false;
+          
+          // Live Hermes Tool Execution Telemetry
+          if (cmd.type === 'tool_call' && brainStatusBadge) {
+            brainStatusBadge.textContent = `⚡ [TOOL: ${cmd.tool || 'EXEC'}]`;
+            brainStatusBadge.style.color = '#38bdf8';
+          } else if (cmd.type === 'thinking' && brainStatusBadge) {
+            brainStatusBadge.textContent = '⚡ THINKING...';
+            brainStatusBadge.style.color = '#f59e0b';
+          }
+
+          if (typeof cmd.expression === 'number') avatar.setExpression(cmd.expression);
+          if (cmd.animation && avatar.playBehavior) {
+            avatar.playBehavior(cmd.animation);
+            currentActiveAnimId = cmd.animation;
+            renderAnimationDeck();
+          } else if (cmd.mode) {
+            avatar.setAnimationMode(cmd.mode);
+          }
+          updateSentimentDisplay(cmd);
+          if (cmd.text && !cmd.clientId && cmd.type !== 'chat_reply' && cmd.type !== 'thinking' && cmd.type !== 'tool_call' && !document.hidden && (Date.now() - (window.__lastChatAt || 0) > 6000)) {
+            speechInput.value = cmd.text;
+            speakWithKokoro(cmd.text);
+          }
+        } catch (_) {}
+      };
+    } catch (_) {}
+
+    // --- Wire Up Frameless Window Controls ---
+    const btnWindowClose = document.getElementById('btnWindowClose');
+    const btnWindowMin = document.getElementById('btnWindowMin');
+    const btnWindowPin = document.getElementById('btnWindowPin');
+    const btnWindowMode = document.getElementById('btnWindowMode');
+    let isOverlayMode = document.body.classList.contains('overlay-mode');
+    let isAlwaysOnTop = false;
+
+    if (btnWindowClose) {
+      btnWindowClose.onclick = () => {
+        if (window.verityDesktop && window.verityDesktop.close) {
+          window.verityDesktop.close();
+        } else {
+          window.close();
+        }
+      };
+    }
+
+    if (btnWindowMin) {
+      btnWindowMin.onclick = () => {
+        if (window.verityDesktop && window.verityDesktop.minimize) {
+          window.verityDesktop.minimize();
+        }
+      };
+    }
+
+    if (btnWindowPin) {
+      window.verityDesktop?.getAlwaysOnTop?.().then(value => {
+        isAlwaysOnTop = Boolean(value);
+        btnWindowPin.classList.toggle('active-pinned', isAlwaysOnTop);
+      }).catch(() => {});
+      btnWindowPin.onclick = () => {
+        isAlwaysOnTop = !isAlwaysOnTop;
+        btnWindowPin.classList.toggle('active-pinned', isAlwaysOnTop);
+        btnWindowPin.title = isAlwaysOnTop ? 'Always on Top: Active' : 'Always on Top: Disabled';
+        if (window.verityDesktop && window.verityDesktop.setAlwaysOnTop) {
+          window.verityDesktop.setAlwaysOnTop(isAlwaysOnTop);
+        }
+      };
+    }
+
+    function setViewMode(overlay) {
+      isOverlayMode = Boolean(overlay);
+      document.body.classList.toggle('overlay-mode', isOverlayMode);
+      if (btnWindowMode) {
+        btnWindowMode.title = isOverlayMode ? 'Switch to Full Character Studio' : 'Switch to Compact Companion Card';
+      }
+      setTimeout(() => {
+        if (avatar && avatar._onResize) avatar._onResize();
+      }, 40);
+    }
+
+    if (btnWindowMode) {
+      btnWindowMode.title = 'Pop Verity out as a floating desktop agent';
+      btnWindowMode.onclick = () => {
+        if (window.verityDesktop && window.verityDesktop.popOut) popOutToDesktop();
+        else setViewMode(!isOverlayMode);
+      };
+    }
+    if (btnTogglePureBallEarly()) { /* pure-ball toggle replaced by pop-out */ }
+    function btnTogglePureBallEarly() {
+      const b = document.getElementById('btnTogglePureBall');
+      if (b && window.verityDesktop) b.style.display = 'none';
+      return !!b;
+    }
+
+    if (window.verityDesktop && window.verityDesktop.onOverlayState) {
+      window.verityDesktop.onOverlayState((state) => {
+        setViewMode(state);
+      });
+    }
+
+    // Quick Action Chips in Hermes Chat Module
+    const chipCode = document.getElementById('chipCode');
+    const chipPopcorn = document.getElementById('chipPopcorn');
+    const chipCreepy = document.getElementById('chipCreepy');
+    const chipWake = document.getElementById('chipWake');
+    const chipBreakout = document.getElementById('chipBreakout');
+    const btnTogglePureBall = document.getElementById('btnTogglePureBall');
+
+    if (btnTogglePureBall) {
+      btnTogglePureBall.onclick = () => {
+        document.body.classList.toggle('pure-ball-mode');
+        btnTogglePureBall.classList.toggle('active-pinned', document.body.classList.contains('pure-ball-mode'));
+      };
+    }
+
+    // Double clicking the 3D sphere toggles pure floating ball mode
+    const threeContainerEl = document.getElementById('threeContainer');
+    if (threeContainerEl) {
+      threeContainerEl.addEventListener('dblclick', () => {
+        if (document.body.classList.contains('overlay-mode')) {
+          document.body.classList.toggle('pure-ball-mode');
+          if (btnTogglePureBall) {
+            btnTogglePureBall.classList.toggle('active-pinned', document.body.classList.contains('pure-ball-mode'));
+          }
+        }
+      });
+    }
+
+    if (chipCode) chipCode.onclick = () => avatar.playBehavior('ANIM_032_TERMINAL_HACK_MODE');
+    if (chipPopcorn) chipPopcorn.onclick = () => avatar.playBehavior('ANIM_101_MOVIE_POPCORN_MUNCH');
+    if (chipCreepy) chipCreepy.onclick = () => avatar.playBehavior('ANIM_011_UNBLINKING_STARE');
+    if (chipWake) chipWake.onclick = () => avatar.playBehavior('ANIM_095_BIG_YAWN_STRETCH');
+    if (chipBreakout) chipBreakout.onclick = () => triggerBreakoutToScreenTop();
+  </script>
+<script src="./studio.js"></script>
+<script>
+  (() => {
+    const screen = document.getElementById('verityStartup');
+    const bar = document.querySelector('.startup-track');
+    const fill = document.getElementById('startupProgress');
+    const percent = document.getElementById('startupPercent');
+    const message = document.getElementById('startupMessage');
+    const started = performance.now();
+    let value = 8, ready = false, finished = false;
+    const labels = [[30, 'Warming up your companion'], [58, 'Setting the scene'], [82, 'Almost ready']];
+    const tick = now => {
+      if (finished) return;
+      const target = ready ? 100 : Math.min(88, 8 + (now - started) / 28);
+      value += (target - value) * (ready ? .2 : .08);
+      if (ready && now - started >= 1050) value = Math.min(100, value + 3);
+      const shown = Math.floor(value);
+      fill.style.transform = `scaleX(${shown / 100})`;
+      percent.textContent = `${String(shown).padStart(2, '0')}%`;
+      bar.setAttribute('aria-valuenow', shown);
+      const next = [...labels].reverse().find(([at]) => shown >= at);
+      if (next) message.textContent = next[1];
+      if (ready && shown >= 100) {
+        finished = true;
+        screen.classList.add('is-complete');
+        setTimeout(() => screen.remove(), 480);
+        return;
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    window.addEventListener('load', () => { ready = true; }, { once: true });
+    // Replace emoji used as interface symbols with a consistent, decorative SVG mark.
+    const emoji = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/gu;
+    const hasEmoji = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
+    const iconSvg = '<svg class="ui-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5 14.2 9.8 20.5 12l-6.3 2.2L12 20.5l-2.2-6.3L3.5 12l6.3-2.2L12 3.5Z"/></svg>';
+    const clean = root => {
+      if (!root?.matches?.('button,.eyebrow-pill,.anim-cat-pill,.companion-chip,.btn-icon-circle,.breach-badge,#brainStatusBadge,#ttsStatusBadge,#subAgentBarTitle,#micIcon,.msg-subagent strong,option')) return;
+      if (root.matches('option')) { root.textContent = root.textContent.replace(emoji, ''); return; }
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      const nodes = []; while (walker.nextNode()) if (hasEmoji.test(walker.currentNode.data)) nodes.push(walker.currentNode);
+      for (const node of nodes) {
+        const parts = node.data.split(emoji); const count = (node.data.match(emoji) || []).length;
+        if (!count) continue;
+        const fragment = document.createDocumentFragment();
+        parts.forEach((part, i) => { if (part) fragment.append(document.createTextNode(part)); if (i < count) { const holder = document.createElement('span'); holder.innerHTML = iconSvg; fragment.append(holder.firstElementChild); } });
+        node.replaceWith(fragment);
+      }
+    };
+    const sweep = () => document.querySelectorAll('button,.eyebrow-pill,.anim-cat-pill,.companion-chip,.btn-icon-circle,.breach-badge,#brainStatusBadge,#ttsStatusBadge,#subAgentBarTitle,#micIcon,.msg-subagent strong,option').forEach(clean);
+    sweep();
+    new MutationObserver(records => {
+      for (const record of records) {
+        if (record.type === 'characterData') clean(record.target.parentElement);
+        for (const node of record.addedNodes || []) {
+          if (node.nodeType === 3) clean(node.parentElement);
+          if (node.nodeType === 1) { clean(node); node.querySelectorAll?.('button,.eyebrow-pill,.anim-cat-pill,.companion-chip,.btn-icon-circle,.breach-badge,#brainStatusBadge,#ttsStatusBadge,#subAgentBarTitle,#micIcon,.msg-subagent strong,option').forEach(clean); }
+        }
+      }
+    }).observe(document.body, { subtree: true, childList: true, characterData: true });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+@font-face { font-family:Verity Sans; src:local('Bahnschrift'); font-weight:100 900; }
+:root { --gold:#e4d5a6; --ink:rgba(35,36,30,.96); --hair:#fff2; --text:#f4ecd9; --dim:#bcb3a0; }
+body,button,input { font-family:Verity Sans!important; }
+#ballHit,#resizeHandle { touch-action:none; }
+#dock,#bubble { border:0; border-radius:24px; background:var(--ink); box-shadow:inset 0 1px 0 #fff2,0 0 0 5px #e4d5a60a,0 12px 40px #a08b4e0c; backdrop-filter:none; }
+#input { color:var(--text); font-size:13px; }
+#send { background:#e4d5a6; color:#423b29; border:0; border-radius:50%; box-shadow:inset 0 1px 0 #fff6; }
+button,input { transition:transform .6s cubic-bezier(.16,1,.3,1),opacity .6s cubic-bezier(.16,1,.3,1)!important; }
+button:hover { transform:translateY(-1px); }button:active { transform:scale(.97); }
+button:focus-visible,input:focus-visible { outline:2px solid #e4d5a6; outline-offset:3px; }
+#glow { box-shadow:none; }body.hover #glow { box-shadow:0 0 34px 2px #e4d5a618; }
+@media(prefers-reduced-motion:reduce) { *,*:before,*:after { animation:none!important; transition:none!important; } }

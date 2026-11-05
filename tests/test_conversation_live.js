@@ -1,0 +1,72 @@
+// Explicit live check: calls the configured chat/transcription provider.
+const { app, BrowserWindow, ipcMain, session } = require('electron');
+const path = require('path');
+const fs = require('fs');
+const assert = require('assert');
+const { createVerityServer } = require('../src/launch');
+app.setPath('userData', path.join(__dirname, '.conversation-test-profile'));
+app.commandLine.appendSwitch('use-fake-device-for-media-stream');
+app.commandLine.appendSwitch('use-fake-ui-for-media-stream');
+ipcMain.handle('verity:get-presence', () => null);
+ipcMain.handle('verity:get-microphone', () => ({enabled:false, state:'off'}));
+ipcMain.handle('verity:get-always-on-top', () => false);
+const server = createVerityServer();
+const timeout = setTimeout(() => { console.error('Conversation test timed out'); app.exit(1); }, 150000);
+app.whenReady().then(async () => {
+  let win;
+  try {
+    await new Promise((resolve, reject) => { server.once('error', reject); server.listen(4787, '127.0.0.1', resolve); });
+    win = new BrowserWindow({ show: false, width: 1180, height: 780, webPreferences: { preload: path.join(__dirname, '..', 'src', 'preload.js'), backgroundThrottling: false } });
+    const errors = [];
+    win.webContents.on('console-message', (_e, level, message) => { if (level === 3 && /Uncaught|ReferenceError|TypeError/.test(message)) errors.push(message); });
+    await win.loadURL('http://127.0.0.1:4787/');
+    const result = await win.webContents.executeJavaScript(`(async () => {
+      autoVoiceCheckbox.checked = false;
+      conversationHistory = []; localStorage.removeItem('verity.conversation');
+      dispatchChatMessage('Remember this for our conversation: my imaginary pet is a blue fox named Indigo. Briefly acknowledge.');
+      dispatchChatMessage('What is my imaginary pet called, what animal is it, and what color is it?');
+      const deadline = Date.now() + 100000;
+      while ((isMainBrainThinking || pendingMessages.length) && Date.now() < deadline) await new Promise(r => setTimeout(r, 100));
+      if (conversationHistory.length !== 4) throw Error('Queued conversation failed: ' + chatHistoryEl.textContent);
+      const answer = conversationHistory[3].content;
+      if (!/Indigo/i.test(answer) || !/fox/i.test(answer) || !/blue/i.test(answer)) throw Error('Context was lost: ' + answer);
+      if (subAgentHistory.length) throw Error('Follow-up was sent to the side agent');
+      await sendChatToVerity('What name did I give it? Answer briefly.');
+      if (!/Indigo/i.test(conversationHistory[5]?.content || '')) throw Error('Third turn lost context');
+      appendChatMessage('You', '<img src=x onerror="window.chatInjected=true">', true);
+      if (window.chatInjected || chatHistoryEl.querySelector('img')) throw Error('Chat text was interpreted as HTML');
+      await voiceConversation.start();
+      if (!voiceConversation.enabled || !voiceConversation.stream) throw Error('Microphone capture failed');
+      const tracks = voiceConversation.stream.getTracks();
+      voiceConversation.stop();
+      if (tracks.some(t => t.readyState !== 'ended')) throw Error('Microphone did not stop');
+      return { turns: conversationHistory.length / 2, context: true, queuedFollowup: true, microphoneCapture: true, microphoneRelease: true, escapedChat: true };
+    })()`);
+    await new Promise(resolve => { win.webContents.once('did-finish-load', resolve); win.reload(); });
+    result.persisted = await win.webContents.executeJavaScript("conversationHistory.length === 6 && /Indigo/.test(conversationHistory[5].content)");
+    assert(result.persisted, 'Conversation did not survive reload');
+    result.voicePlayback = await win.webContents.executeJavaScript(`(async () => {
+      voiceSelect.value = 'verity_clone';
+      const health = await fetch(API_BASE + '/health-tts').then(r => r.json());
+      if (health.status !== 'ready') throw Error('Voice service is not ready');
+      await speakWithKokoro('Conversation is ready. I am listening.');
+      if (!activeSources.length && !avatar.isSpeaking) throw Error('No voice audio was scheduled');
+      if (!voicePlaybackPending) throw Error('Microphone was not paused during playback');
+      const deadline = Date.now() + 20000;
+      while (voicePlaybackPending && Date.now() < deadline) await new Promise(r => setTimeout(r, 100));
+      if (voicePlaybackPending) throw Error('Listening did not resume after playback');
+      return true;
+    })()`);
+    const audio = fs.readFileSync(path.join(__dirname, '..', 'verity_voice_sample.wav'));
+    const transcription = await fetch('http://127.0.0.1:4787/api/transcribe', { method: 'POST', headers: { 'Content-Type': 'audio/wav' }, body: audio });
+    const transcript = await transcription.json();
+    assert(transcription.ok && transcript.text?.length > 5, JSON.stringify(transcript));
+    result.transcription = transcript.text;
+    assert.equal((await fetch('http://127.0.0.1:4787/.env')).status, 404);
+    result.privateConfigBlocked = true;
+    assert.deepEqual(errors, []);
+    console.log(JSON.stringify(result));
+  } catch (error) { console.error(error); process.exitCode = 1; }
+  clearTimeout(timeout);
+  win?.destroy(); server.closeAllConnections(); server.close(); app.exit(process.exitCode || 0);
+});

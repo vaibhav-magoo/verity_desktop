@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" fill="none">
+  <defs>
+    <radialGradient id="bg" cx="0" cy="0" r="1" gradientTransform="matrix(760 520 -660 965 580 45)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#24220A"/>
+      <stop offset=".52" stop-color="#0A0A0D"/>
+      <stop offset="1" stop-color="#030304"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="0" cy="0" r="1" gradientTransform="matrix(0 255 -255 0 866 286)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F4E500" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#F4E500" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="orb" cx="0" cy="0" r="1" gradientTransform="rotate(62 -8 770) scale(235)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF941"/>
+      <stop offset=".5" stop-color="#F4E500"/>
+      <stop offset="1" stop-color="#C7B900"/>
+    </radialGradient>
+    <linearGradient id="facet" x1="708" x2="993" y1="150" y2="448" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF76A" stop-opacity=".38"/>
+      <stop offset="1" stop-color="#A99D00" stop-opacity=".24"/>
+    </linearGradient>
+    <filter id="blur" width="1.7" height="1.7" x="-.35" y="-.35" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="38"/>
+    </filter>
+    <filter id="shadow" width="1.5" height="1.5" x="-.25" y="-.25" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
+    <clipPath id="orbClip"><circle cx="865" cy="295" r="178"/></clipPath>
+  </defs>
+  <path fill="url(#bg)" d="M0 0h1200v600H0z"/>
+  <path stroke="#F4E500" stroke-opacity=".08" d="M0 300h566M990 300h210M865 0v91M865 499v101M185 0l505 157m350 109 160 50M0 512l685-202m355-158 160-73"/>
+  <circle cx="865" cy="295" r="255" fill="url(#halo)"/>
+  <ellipse cx="865" cy="494" fill="#F4E500" fill-opacity=".18" filter="url(#shadow)" rx="136" ry="24"/>
+  <circle cx="865" cy="295" r="198" fill="#E9D900" fill-opacity=".2" filter="url(#blur)"/>
+  <circle cx="865" cy="295" r="178" fill="url(#orb)"/>
+  <g clip-path="url(#orbClip)" opacity=".42">
+    <path fill="url(#facet)" d="m861 117 86 30 63 83-72 27-85-58 8-82Z"/>
+    <path fill="#FFF783" fill-opacity=".24" d="m853 199 85 58-31 78-96-52 57-84Z"/>
+    <path fill="#CFC000" fill-opacity=".31" d="m938 257 72-27 64 101-109 45-58-41 31-78Z"/>
+    <path fill="#B7AA00" fill-opacity=".24" d="m811 283 96 52 17 106-104-22-48-78 39-58Z"/>
+    <path fill="#FFF86C" fill-opacity=".22" d="m965 376 109-45 28 123-126 53-52-66 41-65Z"/>
+    <path fill="#B8AB00" fill-opacity=".32" d="m820 419 104 22 52 66-89 71-101-63-5-72 39-24Z"/>
+    <path stroke="#5D5500" stroke-opacity=".16" d="m861 117-8 82-57 84-39 58 29 96m75-238 77 58 27 119-41 65m-154-158 96 52 58 41 92-119m-182 171 104 22 41-65 109-45"/>
+    <ellipse cx="865" cy="295" rx="178" ry="178" stroke="#FFF978" stroke-opacity=".18"/>
+  </g>
+  <ellipse cx="810" cy="287" fill="#11110E" rx="11" ry="16"/>
+  <ellipse cx="917" cy="287" fill="#11110E" rx="11" ry="16"/>
+  <path fill="#11110E" d="M780 333c24 8 49 12 83 12 32 0 58-4 86-12-8 29-35 48-84 48-49 0-75-19-85-48Z"/>
+  <path stroke="#FFF685" stroke-opacity=".45" stroke-width="2" d="M792 340c24 8 48 11 72 11 26 0 48-3 73-11"/>
+  <path fill="#F4E500" d="M88 109h34v4H88z"/>
+  <text x="88" y="161" fill="#F4E500" font-family="Consolas,monospace" font-size="13" font-weight="700" letter-spacing="4">YOUR DESKTOP, WITH A LITTLE MORE LIFE</text>
+  <text x="82" y="250" fill="#F7F4DF" font-family="Arial,sans-serif" font-size="76" font-weight="700" letter-spacing="-4">Meet Verity.</text>
+  <text x="88" y="296" fill="#F7F4DF" fill-opacity=".62" font-family="Arial,sans-serif" font-size="20">An expressive 3D companion for conversations,</text>
+  <text x="88" y="326" fill="#F7F4DF" fill-opacity=".62" font-family="Arial,sans-serif" font-size="20">voice, and agent presence.</text>
+  <rect x="88" y="372" width="214" height="42" rx="21" fill="#F4E500"/>
+  <text x="112" y="398" fill="#11110E" font-family="Consolas,monospace" font-size="12" font-weight="700" letter-spacing="1.4">A COMPANION THAT REACTS</text>
+  <text x="88" y="541" fill="#F7F4DF" fill-opacity=".35" font-family="Consolas,monospace" font-size="11" letter-spacing="2">VERITY DESKTOP  /  WINDOWS + ELECTRON</text>
+</svg>

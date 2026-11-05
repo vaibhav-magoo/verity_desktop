@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Verity</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --gold: #ffee00;
+    --ink: rgba(14, 14, 16, 0.88);
+    --hair: rgba(255, 255, 255, 0.12);
+    --text: #f4f4f5;
+    --dim: #a1a1aa;
+    --ok: #34d399;
+    --bad: #f59e0b;
+    --sphere-size: 200px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent !important;
+    overflow: hidden !important;
+    font-family: 'Segoe UI Variable', 'Segoe UI', Inter, system-ui, sans-serif;
+    color: var(--text);
+  }
+  *::-webkit-scrollbar { display: none !important; }
+
+  #app {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ---------- Resize Handle (Top-Left Corner) ---------- */
+  #resizeHandle {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: 20px;
+    height: 20px;
+    border-top: 2px solid rgba(255, 255, 255, 0.28);
+    border-left: 2px solid rgba(255, 255, 255, 0.28);
+    border-top-left-radius: 4px;
+    cursor: nwse-resize;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.2s ease, border-color 0.2s ease;
+  }
+  #resizeHandle::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 8px;
+    height: 8px;
+    border-top: 1.5px solid rgba(255, 238, 0, 0.4);
+    border-left: 1.5px solid rgba(255, 238, 0, 0.4);
+  }
+  body.hover #resizeHandle { opacity: 0.65; }
+  #resizeHandle:hover { opacity: 1; border-color: var(--gold); }
+  body.mini-mode #resizeHandle { display: none !important; }
+
+  /* ---------- Ball (Anchored to the Right) ---------- */
+  #ballWrap {
+    position: absolute;
+    right: 14px;
+    bottom: 22px;
+    width: var(--sphere-size);
+    height: var(--sphere-size);
+    transform-origin: 50% 50%;
+  }
+  #threeContainer { width: 100%; height: 100%; pointer-events: none; }
+  /* Circular hit zone: only this disc grabs the mouse, the rest of the window stays click-through */
+  #ballHit {
+    position: absolute; inset: 12px; border-radius: 50%;
+    cursor: grab;
+  }
+  #ballHit:active { cursor: grabbing; }
+  #glow {
+    position: absolute; inset: 10px; border-radius: 50%; pointer-events: none;
+    box-shadow: 0 0 0 0 rgba(255, 238, 0, 0), 0 18px 40px rgba(0, 0, 0, 0.35);
+    transition: box-shadow .35s ease;
+  }
+  body.hover #glow { box-shadow: 0 0 34px 2px rgba(255, 238, 0, 0.22), 0 18px 40px rgba(0, 0, 0, 0.35); }
+  body.thinking #glow { box-shadow: 0 0 40px 4px rgba(56, 189, 248, 0.35), 0 18px 40px rgba(0, 0, 0, 0.35); }
+
+  /* Mini mode restore / expand button */
+  #miniExpandBtn {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    display: none;
+    place-items: center;
+    cursor: pointer;
+    font-size: 13px;
+    z-index: 50;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    transition: transform .15s ease, background .15s ease;
+  }
+  #miniExpandBtn:hover { transform: scale(1.12); background: rgba(255,238,0,0.2); }
+  body.mini-mode.hover #miniExpandBtn { display: grid; }
+
+  /* Mini mode layout */
+  body.mini-mode #ballWrap {
+    right: 6px;
+    bottom: 6px;
+    width: calc(100% - 12px);
+    height: calc(100% - 12px);
+  }
+  body.mini-mode #ballHit {
+    inset: 4px;
+  }
+  body.mini-mode #dock,
+  body.mini-mode #bubble,
+  body.mini-mode #hint {
+    display: none !important;
+  }
+
+  body.launching #ballWrap { animation: launch .85s cubic-bezier(.2,.7,.2,1) both; }
+  body.appearing #ballWrap { animation: appear .5s cubic-bezier(.2,.9,.3,1.2) both; }
+  body.landed #ballWrap { animation: land .55s cubic-bezier(.3,1.6,.5,1) both; }
+  @keyframes launch {
+    0%   { transform: scale(1.3) rotate(0); filter: drop-shadow(0 0 0 rgba(255,238,0,0)); }
+    35%  { transform: scale(.7) rotate(240deg); filter: drop-shadow(0 0 22px rgba(255,238,0,.75)); }
+    100% { transform: scale(1) rotate(720deg); filter: drop-shadow(0 0 0 rgba(255,238,0,0)); }
+  }
+  @keyframes appear { from { transform: scale(.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes land { 0% { transform: scale(1.0, .82); } 60% { transform: scale(.95, 1.08); } 100% { transform: scale(1); } }
+
+  /* ---------- Reply bubble (To the left of the sphere, above input dock) ---------- */
+  #bubble {
+    position: absolute;
+    left: 14px;
+    right: calc(var(--sphere-size) + 24px);
+    bottom: 84px;
+    max-height: calc(100% - 96px);
+    overflow-y: auto;
+    padding: 10px 14px;
+    background: var(--ink);
+    border: 1px solid var(--hair);
+    border-radius: 18px;
+    backdrop-filter: blur(18px) saturate(1.3);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    font-size: 13px; line-height: 1.45;
+    -webkit-user-select: text; user-select: text;
+    opacity: 0; transform: translateY(8px) scale(.98); pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease;
+  }
+  #bubble.show { opacity: 1; transform: none; pointer-events: auto; }
+  #bubble .who { color: var(--gold); font-weight: 600; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; display: block; margin-bottom: 2px; }
+  #bubble.thinking-dots .txt::after { content: '...'; animation: dots 1.2s steps(4, end) infinite; display: inline-block; width: 1.2em; overflow: hidden; vertical-align: bottom; }
+  @keyframes dots { 0% { width: 0; } 100% { width: 1.2em; } }
+
+  /* ---------- Hover dock / Input bar (To the left of the sphere) ---------- */
+  #dock {
+    position: absolute;
+    left: 14px;
+    right: calc(var(--sphere-size) + 24px);
+    bottom: 26px;
+    height: 50px;
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 6px 5px 16px;
+    background: var(--ink);
+    border: 1px solid var(--hair);
+    border-radius: 999px;
+    backdrop-filter: blur(18px) saturate(1.3);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,.06);
+    opacity: 0; transform: translateX(12px) scale(.97); pointer-events: none;
+    transition: opacity .22s ease, transform .22s cubic-bezier(.2,.9,.3,1);
+  }
+  body.hover #dock, body.focused #dock { opacity: 1; transform: none; pointer-events: auto; }
+  #dock:focus-within { border-color: rgba(255, 238, 0, 0.5); }
+  #status { width: 7px; height: 7px; border-radius: 50%; background: var(--bad); flex: none; transition: background .3s; }
+  #status.on { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+  #input {
+    flex: 1; min-width: 0; height: 100%;
+    background: transparent; border: 0; outline: 0; color: var(--text);
+    font: inherit; font-size: 13.5px;
+    -webkit-user-select: text; user-select: text;
+  }
+  #input::placeholder { color: var(--dim); }
+  .dbtn {
+    flex: none; width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid var(--hair); background: rgba(255,255,255,.05); color: var(--text);
+    display: grid; place-items: center; cursor: pointer; font-size: 14px;
+    transition: transform .15s ease, background .15s ease, color .15s ease;
+  }
+  .dbtn:hover { background: rgba(255,255,255,.14); color: #fff; }
+  .dbtn:active { transform: scale(.92); }
+  #miniBtn { font-size: 13px; color: var(--dim); }
+  #miniBtn:hover { color: var(--gold); border-color: rgba(255,238,0,0.35); }
+  #send { background: var(--gold); color: #141400; border-color: transparent; font-weight: 700; }
+  #send:hover { background: #fff35c; }
+  #send:disabled { opacity: .45; cursor: default; }
+
+  #hint {
+    position: absolute;
+    left: 14px;
+    right: calc(var(--sphere-size) + 24px);
+    bottom: 8px;
+    text-align: center;
+    font-size: 10.5px; color: var(--dim); letter-spacing: .04em;
+    opacity: 0; transition: opacity .25s; pointer-events: none;
+  }
+  body.hover #hint, body.focused #hint { opacity: .8; }
+  #popupMic {
+    position: absolute; right: 16px; top: 6px; z-index: 110;
+    min-width: 112px; min-height: 30px; padding: 5px 12px;
+    border: 1px solid rgba(255,255,255,.3); border-radius: 20px;
+    background: #242424; color: #fff; font: 600 12px 'Segoe UI', sans-serif;
+    cursor: pointer; pointer-events: auto;
+  }
+  #popupMic[aria-pressed="true"] { background: #a92736; border-color: #ff9ea7; }
+  #popupMic:focus-visible { outline: 2px solid #ffee00; outline-offset: 2px; }
+  body.mini-mode #popupMic { top: auto; bottom: 2px; right: 5px; min-width: 90px; min-height: 24px; padding: 3px 6px; font-size: 11px; }
+</style>
+<link rel="stylesheet" href="./companion.css">
+</head>
+<body>
+<div id="app">
+  <button id="popupMic" data-hit aria-pressed="false" title="Start voice conversation (audio sent to Groq for transcription)">Mic off</button>
+  <!-- Top-left drag handle for smooth interactive resizing -->
+  <div id="resizeHandle" data-hit title="Drag corner to resize (or Ctrl+Scroll)"></div>
+
+  <!-- Bubble sits to the left of the sphere -->
+  <div id="bubble" data-hit><span class="who">Verity</span><span class="txt" id="bubbleText"></span></div>
+
+  <!-- Ball sits on the right -->
+  <div id="ballWrap">
+    <button id="miniExpandBtn" class="dbtn" data-hit title="Expand Verity to full size">&#x2922;</button>
+    <div id="glow"></div>
+    <div id="threeContainer"></div>
+    <div id="ballHit" data-hit title="Drag to move · Double-click for Studio / Sub-Agent · Right-click for menu"></div>
+  </div>
+
+  <!-- Input dock sits to the left of the sphere -->
+  <div id="dock" data-hit>
+    <span id="status" title="Hermes gateway"></span>
+    <input id="input" type="text" placeholder="Ask Verity anything..." autocomplete="off" spellcheck="false" />
+    <button class="dbtn" id="miniBtn" title="Miniaturize (Compact Mode)">&#x2014;</button>
+    <button class="dbtn" id="studioBtn" title="Open Studio (Ctrl+Alt+O)">&#9638;</button>
+    <button class="dbtn" id="send" title="Send (Enter)">&#8593;</button>
+  </div>
+  <div id="hint">Ctrl + Alt + V to chat from anywhere</div>
+</div>
+
+<script src="./three.min.js"></script>
+<script src="./verity-animations.js"></script>
+<script src="./verity-emotion-director.js"></script>
+<script src="./verity-sentiment.js"></script>
+<script src="./verity-three.js"></script>
+<script src="./verity-presence.js"></script>
+<script src="./verity-voice.js"></script>
+<script src="./verity-tts.js"></script>
+<script src="./verity-mic-control.js"></script>
+<script>
+(() => {
+  const API_BASE = location.protocol.startsWith('http') ? location.origin : 'http://127.0.0.1:4777';
+  const TTS_DIRECT_BASE = 'http://127.0.0.1:5001';
+  const desk = window.verityDesktop || null;
+  const orb = desk && desk.orb ? desk.orb : null;
+
+  const { VerityThreeAvatar } = window;
+  const $ = (id) => document.getElementById(id);
+  const container = $('threeContainer');
+  const input = $('input');
+  const sendBtn = $('send');
+  const bubble = $('bubble');
+  const bubbleText = $('bubbleText');
+  const statusDot = $('status');
+
+  const avatar = new VerityThreeAvatar(container, { cols: 24, rows: 16, pixelScale: 2 });
+  const presence = VerityPresence.attach(avatar);
+  avatar.setAnimationMode && avatar.setAnimationMode('none');
+
+  // ------------------------------------------------------------------
+  // Click-through management: only the ball disc, bubble and dock catch the mouse.
+  // ------------------------------------------------------------------
+  let ignoring = true;
+  let dragging = false;
+  let resizing = false;
+  let resizeDownPos = null;
+  let isMiniMode = false;
+  let inputFocused = false;
+  let hoverTimer = null;
+  let bubbleTimer = null;
+
+  function updateSphereSize() {
+    if (isMiniMode) {
+      const miniDim = Math.min(window.innerWidth, window.innerHeight) - 12;
+      document.documentElement.style.setProperty('--sphere-size', `${Math.max(80, miniDim)}px`);
+    } else {
+      const h = window.innerHeight;
+      const calculated = Math.min(230, Math.max(140, h - 45));
+      document.documentElement.style.setProperty('--sphere-size', `${calculated}px`);
+    }
+  }
+  window.addEventListener('resize', updateSphereSize);
+  updateSphereSize();
+
+  function setIgnore(v) {
+    if (v === ignoring) return;
+    ignoring = v;
+    if (orb) orb.setIgnoreMouse(v);
+  }
+  function setHover(on) {
+    clearTimeout(hoverTimer);
+    if (on) {
+      document.body.classList.add('hover');
+    } else {
+      hoverTimer = setTimeout(() => {
+        if (!inputFocused && !dragging && !resizing && !input.value) document.body.classList.remove('hover');
+      }, 1100);
+    }
+  }
+  function hitAt(x, y) {
+    const el = document.elementFromPoint(x, y);
+    return !!(el && el.closest('[data-hit]'));
+  }
+  document.addEventListener('mousemove', (e) => {
+    if (dragging || resizing) return;
+    const hit = hitAt(e.clientX, e.clientY);
+    if (!inputFocused) setIgnore(!hit);
+    setHover(hit);
+  });
+  document.addEventListener('mouseleave', () => {
+    if (!inputFocused && !dragging && !resizing) { setIgnore(true); setHover(false); }
+  });
+
+  // ------------------------------------------------------------------
+  // Manual drag (app-region drag would swallow clicks / hover / double-click)
+  // ------------------------------------------------------------------
+  const ballHit = $('ballHit');
+  let downPos = null;
+  let moved = false;
+  let dragPointer = null;
+  let pressedAt = 0;
+  ballHit.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0 || dragging || resizing) return;
+    e.preventDefault();
+    setIgnore(false);
+    dragPointer = e.pointerId;
+    pressedAt = performance.now();
+    ballHit.setPointerCapture(e.pointerId);
+    downPos = { x: e.screenX, y: e.screenY };
+    moved = false;
+    dragging = true;
+    if (orb) orb.dragStart();
+  });
+  ballHit.addEventListener('pointermove', (e) => {
+    if (!dragging || !downPos || e.pointerId !== dragPointer) return;
+    if (!(e.buttons & 1)) { endDrag(e, true); return; }
+    if (Math.abs(e.screenX - downPos.x) + Math.abs(e.screenY - downPos.y) > 4) moved = true;
+    if (moved && orb) orb.dragMove();
+  });
+  const endDrag = (e, cancelled = false) => {
+    if (!dragging) return;
+    if (e.pointerId !== undefined && e.pointerId !== dragPointer) return;
+    dragging = false;
+    try { ballHit.releasePointerCapture(dragPointer); } catch (_) {}
+    if (orb) orb.dragEnd();
+    if (!cancelled && !moved && performance.now() - pressedAt < 500) {
+      if (isMiniMode) {
+        if (orb && orb.toggleMini) orb.toggleMini();
+        setTimeout(openChat, 100);
+      } else {
+        // simple click -> open chat and poke the ball
+        avatar.playBehavior && avatar.playBehavior('ANIM_073_CURIOUS_COCKED_HEAD');
+        openChat();
+      }
+    }
+    downPos = null;
+    dragPointer = null;
+  };
+  ballHit.addEventListener('pointerup', endDrag);
+  ballHit.addEventListener('pointercancel', e => endDrag(e, true));
+  ballHit.addEventListener('lostpointercapture', e => endDrag(e, true));
+  window.addEventListener('blur', e => endDrag(e, true));
+  ballHit.addEventListener('dblclick', () => {
+    if (isMiniMode) {
+      if (orb && orb.toggleMini) orb.toggleMini();
+      return;
+    }
+    window.dispatchEvent(new CustomEvent('verity:gesture:subagent-toggle'));
+  });
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    if (hitAt(e.clientX, e.clientY) && orb) orb.contextMenu();
+  });
+
+  // ------------------------------------------------------------------
+  // Smooth Interactive Resizing & Miniaturization Controls
+  // ------------------------------------------------------------------
+  const resizeHandle = $('resizeHandle');
+  let resizePointer = null;
+  if (resizeHandle) {
+    resizeHandle.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0 || dragging || resizing || isMiniMode) return;
+      e.preventDefault();
+      setIgnore(false);
+      resizePointer = e.pointerId;
+      resizeHandle.setPointerCapture(e.pointerId);
+      resizing = true;
+      resizeDownPos = { x: e.screenX, y: e.screenY };
+      if (orb && orb.resizeStart) orb.resizeStart();
+    });
+    resizeHandle.addEventListener('pointermove', (e) => {
+      if (!resizing || !resizeDownPos || e.pointerId !== resizePointer) return;
+      if (!(e.buttons & 1)) { endResize(e); return; }
+      if (Math.abs(e.screenX - resizeDownPos.x) + Math.abs(e.screenY - resizeDownPos.y) < 4) return;
+      if (orb && orb.resizeMove) orb.resizeMove();
+    });
+    const endResize = (e) => {
+      if (!resizing) return;
+      if (e.pointerId !== undefined && e.pointerId !== resizePointer) return;
+      resizing = false;
+      try { resizeHandle.releasePointerCapture(resizePointer); } catch (_) {}
+      if (orb && orb.resizeEnd) orb.resizeEnd();
+      resizeDownPos = null;
+      resizePointer = null;
+    };
+    resizeHandle.addEventListener('pointerup', endResize);
+    resizeHandle.addEventListener('pointercancel', endResize);
+    resizeHandle.addEventListener('lostpointercapture', endResize);
+    window.addEventListener('blur', endResize);
+  }
+
+  // Ctrl / Alt + Mouse Wheel on popup scales the window
+  window.addEventListener('wheel', (e) => {
+    if ((e.ctrlKey || e.altKey) && !dragging && !resizing && e.deltaY !== 0) {
+      e.preventDefault();
+      const step = e.deltaY < 0 ? 30 : -30;
+      if (orb && orb.resizeStep) orb.resizeStep(step);
+    }
+  }, { passive: false });
+
+  // Miniaturize button click
+  const miniBtn = $('miniBtn');
+  if (miniBtn) {
+    miniBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (orb && orb.toggleMini) orb.toggleMini();
+    });
+  }
+
+  // Mini mode restore button click
+  const miniExpandBtn = $('miniExpandBtn');
+  if (miniExpandBtn) {
+    miniExpandBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (orb && orb.toggleMini) orb.toggleMini();
+    });
+  }
+
+  // ------------------------------------------------------------------
+  // Chat open / focus
+  // ------------------------------------------------------------------
+  function openChat() {
+    if (isMiniMode && orb && orb.toggleMini) {
+      orb.toggleMini();
+    }
+    document.body.classList.add('hover', 'focused');
+    setIgnore(false);
+    if (orb) orb.focus();
+    setTimeout(() => input.focus(), 30);
+  }
+  input.addEventListener('focus', () => {
+    inputFocused = true;
+    document.body.classList.add('focused', 'hover');
+    setIgnore(false);
+  });
+  input.addEventListener('blur', () => {
+    inputFocused = false;
+    document.body.classList.remove('focused');
+    setHover(false);
+    setTimeout(() => { if (!inputFocused && !dragging && !resizing) setIgnore(true); }, 400);
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); send(); }
+    else if (e.key === 'Escape') { input.blur(); input.value = ''; hideBubble(); }
+  });
+  sendBtn.addEventListener('click', send);
+  $('studioBtn').addEventListener('click', () => { if (desk) desk.openStudio(); });
+
+  if (orb) {
+    orb.onSummon(() => openChat());
+    orb.onMiniChanged((mini) => {
+      isMiniMode = Boolean(mini);
+      document.body.classList.toggle('mini-mode', isMiniMode);
+      updateSphereSize();
+    });
+    orb.onAppear(() => {
+      document.body.classList.add('appearing');
+      setTimeout(() => document.body.classList.remove('appearing'), 700);
+    });
+    orb.onLaunch(() => {
+      document.body.classList.remove('landed');
+      document.body.classList.add('launching');
+      avatar.playBehavior && avatar.playBehavior('ANIM_003_PLAYFUL_WINK');
+      setTimeout(() => document.body.classList.remove('launching'), 900);
+    });
+    orb.onLanded(() => {
+      document.body.classList.add('landed');
+      avatar.playBehavior && avatar.playBehavior('ANIM_001_HAPPY_BOUNCE', { intensity: 0.9 });
+      setTimeout(() => document.body.classList.remove('landed'), 700);
+      showBubble("I'm out! Hover over me or press Ctrl+Alt+V to talk.", 6000);
+    });
+  }
+
+  // ------------------------------------------------------------------
+  // Bubble
+  // ------------------------------------------------------------------
+  function showBubble(text, ms) {
+    clearTimeout(bubbleTimer);
+    bubble.classList.remove('thinking-dots');
+    bubbleText.textContent = text;
+    bubble.classList.add('show');
+    const life = ms || Math.min(30000, 6000 + text.length * 55);
+    bubbleTimer = setTimeout(hideBubble, life);
+  }
+  function showThinking() {
+    clearTimeout(bubbleTimer);
+    bubbleText.textContent = 'Thinking';
+    bubble.classList.add('show', 'thinking-dots');
+  }
+  function hideBubble() {
+    clearTimeout(bubbleTimer);
+    bubble.classList.remove('show', 'thinking-dots');
+  }
+
+  // ------------------------------------------------------------------
+  // Hermes status
+  // ------------------------------------------------------------------
+  let hermesOnline = false;
+  async function checkHermes() {
+    try {
+      const r = await fetch(`${API_BASE}/api/hermes/status`);
+      const d = await r.json();
+      hermesOnline = Boolean(d && d.online);
+    } catch (_) { hermesOnline = false; }
+    statusDot.classList.toggle('on', hermesOnline);
+    statusDot.title = hermesOnline ? 'Hermes gateway online' : 'Hermes offline (using cloud brain)';
+  }
+  checkHermes();
+  setInterval(checkHermes, 8000);
+
+  // ------------------------------------------------------------------
+  // Voice (Kokoro streaming, falls back to browser voice)
+  // ------------------------------------------------------------------
+  let voiceId = 'verity_clone';
+  fetch(`${API_BASE}/health-tts`).then(r => r.json()).then(info => {
+    if (info && info.default_voice) voiceId = info.default_voice;
+  }).catch(() => {});
+
+  let activeSources = [];
+  let speakAbort = null;
+  let voicePlaybackPending = false;
+  function stopAudio() {
+    voicePlaybackPending = false;
+    if (speakAbort) { try { speakAbort.abort(); } catch (_) {} speakAbort = null; }
+    activeSources.forEach(s => { try { s.onended = null; s.stop(); } catch (_) {} });
+    activeSources = [];
+    avatar.isSpeaking = false;
+    avatar.synthAnalyser = null;
+    try { window.speechSynthesis.cancel(); } catch (_) {}
+  }
+
+  async function speak(text, pitch = 0.0, voice_effect = 'normal') {
+    text = (text || '').trim();
+    if (!text) return;
+    stopAudio();
+    const ac = new AbortController();
+    speakAbort = ac;
+    voicePlaybackPending = true;
+    let streamFinished = false;
+    const body = JSON.stringify({ text, voice: voiceId, speed: 1.05, pitch, voice_effect });
+    try {
+      if (!avatar.audioCtx) avatar.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (avatar.audioCtx.state === 'suspended') await avatar.audioCtx.resume();
+      const analyser = avatar.audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.42;
+      analyser.connect(avatar.audioCtx.destination);
+      avatar.synthAnalyser = analyser;
+
+      // Acoustic Mandible DSP Chain
+      const subBassFilter = avatar.audioCtx.createBiquadFilter();
+      subBassFilter.type = 'lowshelf';
+      subBassFilter.frequency.value = 140;
+      if (voice_effect === 'intimidate' || pitch <= -5.0) subBassFilter.gain.value = 9.5;
+      else if (voice_effect === 'demon' || pitch <= -10.0) subBassFilter.gain.value = 13.5;
+      else if (voice_effect === 'deep' || pitch <= -2.5) subBassFilter.gain.value = 6.0;
+      else subBassFilter.gain.value = 0.0;
+
+      const trebleFilter = avatar.audioCtx.createBiquadFilter();
+      trebleFilter.type = 'highshelf';
+      trebleFilter.frequency.value = 3400;
+      if (voice_effect === 'high' || pitch >= 5.0) trebleFilter.gain.value = 5.5;
+      else if (voice_effect === 'intimidate' || pitch <= -5.0) trebleFilter.gain.value = -3.5;
+      else trebleFilter.gain.value = 0.0;
+
+      subBassFilter.connect(trebleFilter);
+      trebleFilter.connect(analyser);
+
+      const resp = await VerityTTS.requestVoiceStream({
+        base: API_BASE, directBase: TTS_DIRECT_BASE, signal: ac.signal, payload: JSON.parse(body)
+      });
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let nextStart = 0;
+      let first = true;
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          const msg = JSON.parse(line);
+          if (!msg.audio_b64) continue;
+          const bin = atob(msg.audio_b64);
+          const bytes = new Uint8Array(bin.length);
+          for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+          const buf = await avatar.audioCtx.decodeAudioData(bytes.buffer.slice(0));
+          if (ac.signal.aborted) return;
+          const src = avatar.audioCtx.createBufferSource();
+          src.buffer = buf;
+          src.connect(subBassFilter);
+          const now = avatar.audioCtx.currentTime;
+          if (first) { first = false; nextStart = now + 0.02; avatar.isSpeaking = true; }
+          else if (nextStart < now) nextStart = now + 0.01;
+          src.start(nextStart);
+          nextStart += buf.duration;
+          activeSources.push(src);
+          src.onended = () => {
+            const k = activeSources.indexOf(src);
+            if (k !== -1) activeSources.splice(k, 1);
+            if (!activeSources.length) { if (streamFinished && speakAbort === ac) voicePlaybackPending = false; avatar.isSpeaking = false; avatar.synthAnalyser = null; }
+          };
+        }
+      }
+      if (first) throw new Error('Voice service returned no audio');
+    } catch (err) {
+      if (ac.signal.aborted || (err && err.name === 'AbortError')) return;
+      activeSources.forEach(source => { source.onended = null; try { source.stop(); } catch (_) {} });
+      activeSources = [];
+      console.error('Custom voice unavailable:', err);
+      avatar.isSpeaking = false; avatar.synthAnalyser = null;
+      showBubble('Voice is unavailable. Please try again when the voice service is ready.', 7000);
+    } finally {
+      streamFinished = true;
+      if (speakAbort === ac && !activeSources.length && !window.speechSynthesis.pending && !window.speechSynthesis.speaking) voicePlaybackPending = false;
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // Chat
+  // ------------------------------------------------------------------
+  const clientId = crypto.randomUUID();
+  const pendingMessages = [];
+  let history = [];
+  let subHistory = [];
+  let busy = false;
+  let inFlightQuery = '';
+  let subAgentBusy = false;
+  let lastChatAt = 0;
+
+  function applyDecision(res) {
+    if (typeof res.expression === 'number' && avatar.setExpression) avatar.setExpression(res.expression);
+    if (res.animation && avatar.playBehavior) avatar.playBehavior(res.animation);
+    else if (res.mode && avatar.setAnimationMode) avatar.setAnimationMode(res.mode);
+  }
+
+  async function sendSubAgent(msg) {
+    if (!msg || subAgentBusy) return;
+    subAgentBusy = true;
+    input.value = '';
+    showBubble('Echo: ...');
+    if (avatar && avatar.setSubAgentActive) avatar.setSubAgentActive(true);
+
+    try {
+      const resp = await fetch(`${API_BASE}/api/subagent/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: msg,
+          clientId,
+          mainQuery: inFlightQuery,
+          history: subHistory
+        })
+      });
+      const res = await resp.json();
+        presence.prepareDecision(res);
+      const reply = res.reply || res.text || "I'm right here with you!";
+      subHistory.push({ role: 'user', content: msg }, { role: 'assistant', content: reply });
+      if (subHistory.length > 8) subHistory = subHistory.slice(-8);
+
+      showBubble(`Echo: ${reply}`);
+      if (avatar) {
+        if (avatar.setSubAgentSpeaking) avatar.setSubAgentSpeaking(true);
+        if (typeof res.expression === 'number') avatar.setExpression(res.expression);
+        if (res.animation && avatar.playBehavior) avatar.playBehavior(res.animation);
+      }
+      speak(reply, res.pitch || 3.0, res.voice_effect || 'normal');
+    } catch (e) {
+      showBubble(`Echo: (${e.message})`);
+    } finally {
+      subAgentBusy = false;
+      if (inputFocused) input.focus();
+    }
+  }
+
+  async function send(textOverride) {
+    const msg = (typeof textOverride === 'string' ? textOverride : input.value).trim();
+    if (!msg) return;
+
+    // Seamless parallel routing: If main brain is thinking, dispatch to Sub-Agent!
+    if (busy) {
+      pendingMessages.push(msg);
+      input.value = '';
+      showBubble('Follow-up queued');
+      return;
+    }
+
+    busy = true;
+    inFlightQuery = msg;
+    input.value = '';
+    lastChatAt = Date.now();
+    document.body.classList.add('thinking');
+    showThinking();
+    avatar.playBehavior && avatar.playBehavior('ANIM_074_EAGER_LEAN_IN');
+    if (avatar && avatar.setSubAgentActive) avatar.setSubAgentActive(true);
+
+    try {
+      const resp = await fetch(`${API_BASE}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: msg,
+          clientId,
+          history,
+          model: hermesOnline ? 'nousresearch/hermes-3-llama-3.1-8b' : 'openai/gpt-oss-120b',
+          provider: hermesOnline ? 'hermes' : 'groq'
+        })
+      });
+      const res = await resp.json();
+        presence.prepareDecision(res);
+      if (res.error) throw new Error(res.error);
+      const reply = res.reply || res.text || '...';
+      lastChatAt = Date.now();
+
+      history.push({ role: 'user', content: msg }, { role: 'assistant', content: reply });
+      history = history.slice(-10);
+
+      showBubble(reply);
+      applyDecision(res);
+      const pitchToUse = typeof res.pitch === 'number' ? res.pitch : (res.appraisal ? res.appraisal.recommendedPitch : 0.0);
+      const fxToUse = res.voice_effect || (res.appraisal ? res.appraisal.recommendedVoiceEffect : 'normal');
+      speak(reply, pitchToUse || 0.0, fxToUse || 'normal');
+    } catch (err) {
+      showBubble('Hmm, I could not reach my brain: ' + (err.message || err), 7000);
+    } finally {
+      busy = false;
+      inFlightQuery = '';
+      sendBtn.disabled = false;
+      document.body.classList.remove('thinking');
+      if (avatar && avatar.setSubAgentActive) avatar.setSubAgentActive(false);
+      if (inputFocused) input.focus();
+      if (pendingMessages.length) send(pendingMessages.shift());
+    }
+  }
+
+  window.addEventListener('verity:gesture:subagent-toggle', () => {
+    openChat();
+    input.placeholder = "Talk to Sub-Agent Echo...";
+    if (avatar && avatar.setSubAgentActive) {
+      const next = !avatar.isSubAgentActive();
+      avatar.setSubAgentActive(next);
+      if (next) showBubble("Sub-Agent Echo ready! What's up?", 3500);
+    }
+  });
+
+  const popupMic = $('popupMic');
+  const voiceConversation = new VerityVoiceConversation({
+    endpoint: API_BASE + '/api/transcribe',
+    isBusy: () => busy || subAgentBusy || voicePlaybackPending || avatar.isSpeaking || window.speechSynthesis.speaking,
+    onText: text => send(text),
+    onError: message => showBubble(message, 10000),
+    onState: () => {}
+  });
+  popupMic.onclick = bindVerityMicrophone(voiceConversation, ({ enabled, state }) => {
+    popupMic.textContent = enabled ? '■ Mic on · Stop' : 'Mic off';
+    popupMic.setAttribute('aria-pressed', String(enabled));
+    popupMic.title = enabled ? 'Stop microphone (' + state + ')' : 'Start voice conversation (audio sent to Groq for transcription)';
+    popupMic.setAttribute('aria-label', popupMic.title);
+  });
+
+  // Live agent telemetry (Hermes tool use) and external /api/speak events
+  try {
+    const es = new EventSource(`${API_BASE}/api/events`);
+    es.onmessage = (evt) => {
+      try {
+        const cmd = JSON.parse(evt.data);
+        if (cmd.clientId === clientId) return;
+          presence.prepareDecision(cmd);
+        if (cmd.type === 'thinking' || cmd.type === 'tool_call') avatar.presenceBusy = cmd.status !== 'finished';
+        if (((cmd.text || cmd.reply) && !['thinking', 'tool_call'].includes(cmd.type)) || cmd.error || cmd.status === 'finished') {
+          avatar.presenceBusy = false;
+          if (!busy) document.body.classList.remove('thinking');
+        }
+        if (cmd.type === 'tool_call') {
+          document.body.classList.add('thinking');
+          if (busy) { bubbleText.textContent = 'Using ' + (cmd.tool || 'tool'); }
+        }
+        if (typeof cmd.expression === 'number') avatar.setExpression(cmd.expression);
+        if (cmd.animation && avatar.playBehavior) avatar.playBehavior(cmd.animation);
+        else if (cmd.mode) avatar.setAnimationMode(cmd.mode);
+        // Text from our own chat reply is already spoken above; only speak foreign events.
+        if (cmd.text && !cmd.clientId && cmd.type !== 'chat_reply' && cmd.type !== 'thinking' && cmd.type !== 'tool_call') {
+          showBubble(cmd.text);
+          speak(cmd.text, typeof cmd.pitch === 'number' ? cmd.pitch : 0.0, cmd.voice_effect || 'normal');
+        }
+      } catch (_) {}
+    };
+  } catch (_) {}
+})();
+</script>
+</body>
+</html>
