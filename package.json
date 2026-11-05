@@ -1,6 +1,6 @@
 {
   "name": "verity-desktop-3d",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An expressive 3D desktop companion for AI conversations, voice, and agent presence.",
   "main": "src/main.js",
   "bin": {
