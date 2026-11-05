@@ -36,5 +36,37 @@
     "scripts/",
     "docs/",
     "README.md"
-  ]
+  ],
+  "build": {
+    "appId": "com.verity.desktop",
+    "productName": "Verity",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "services/**/*",
+      "bin/**/*",
+      "scripts/**/*",
+      "docs/**/*",
+      "package.json",
+      "!**/*.log",
+      "!**/.env",
+      "!**/.env.*",
+      "!**/models/**",
+      "!**/tests/**"
+    ],
+    "win": {
+      "icon": "src/assets/verity.ico",
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "Verity-${version}-x64-portable.${ext}"
+    }
+  }
 }

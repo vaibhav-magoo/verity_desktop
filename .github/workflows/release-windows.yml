@@ -1,0 +1,43 @@
+name: Windows release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Package portable Windows app
+        run: npx --yes electron-builder@26 --win portable --x64 --publish never
+
+      - name: Create SHA-256 checksum
+        shell: pwsh
+        run: |
+          $artifact = Get-Item "dist/Verity-*-x64-portable.exe"
+          $hash = (Get-FileHash $artifact.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  $($artifact.Name)" | Set-Content "dist/SHA256SUMS.txt" -Encoding ascii
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            dist/Verity-*-x64-portable.exe
+            dist/SHA256SUMS.txt

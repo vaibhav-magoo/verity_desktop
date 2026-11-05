@@ -10,6 +10,7 @@ An expressive 3D companion for AI conversations, voice, and agent activity. Veri
 
 <p>
   <a href="#-get-started"><strong>Get started</strong></a> ·
+  <a href="#-download-for-windows"><strong>Download for Windows</strong></a> ·
   <a href="#-what-verity-does">Explore features</a> ·
   <a href="docs/HERMES_DESKTOP_CLIENT.md">Hermes integration</a>
 </p>
@@ -18,6 +19,7 @@ An expressive 3D companion for AI conversations, voice, and agent activity. Veri
 ![Built with Electron](https://img.shields.io/badge/desktop-Electron-161616?style=flat-square&logo=electron&logoColor=9feaf9)
 ![3D powered by Three.js](https://img.shields.io/badge/3D-Three.js-161616?style=flat-square&logo=threedotjs&logoColor=white)
 ![Status: In development](https://img.shields.io/badge/status-in%20development-f5df00?style=flat-square&labelColor=161616)
+![Latest release](https://img.shields.io/github/v/release/vaibhav-magoo/verity_desktop?style=flat-square&label=latest%20release&color=F4E500)
 
 </div>
 
@@ -30,6 +32,7 @@ An expressive 3D companion for AI conversations, voice, and agent activity. Veri
 
 - [What Verity does](#-what-verity-does)
 - [A quick tour](#-a-quick-tour)
+- [Download for Windows](#-download-for-windows)
 - [Get started](#-get-started)
 - [Connect an AI provider](#-connect-an-ai-provider)
 - [Voice and local services](#-voice-and-local-services)
@@ -50,11 +53,17 @@ An expressive 3D companion for AI conversations, voice, and agent activity. Veri
 
 ## 🪩 A quick tour
 
-The gold sphere is Verity’s canvas: a configurable avatar that responds as the conversation moves.
+The gold sphere is Verity’s canvas: a configurable avatar that responds as the conversation moves. Its motion library includes 721 registered behaviors, 15 reference expressions, and 16 categories.
 
 <p align="center">
-  <img src="src/assets/verity-hero.svg" alt="Golden Verity avatar on a dark, neon-accented background" width="86%">
+  <img src="docs/assets/verity-motion-atlas.svg" alt="Verity motion atlas showing the golden companion, 721 registered animations, 15 reference expressions, and 16 categories" width="100%">
 </p>
+
+## ⬇️ Download for Windows
+
+Get the latest portable 64-bit Windows build from [GitHub Releases](https://github.com/vaibhav-magoo/verity_desktop/releases/latest). No installer is needed; download the `.exe` and launch it. Verify the file against the included `SHA256SUMS.txt` if you want to check its integrity.
+
+Verity opens its setup flow for your provider and API key. Keys you enter are stored locally by the app; they are not bundled into the download. Optional local voice services need their own Python environment and models.
 
 <details>
 <summary><strong>How the pieces fit together</strong></summary>

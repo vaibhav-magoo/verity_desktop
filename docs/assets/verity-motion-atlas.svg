@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="660" viewBox="0 0 1200 660" fill="none" role="img" aria-labelledby="title description">
+  <title id="title">Verity motion atlas</title>
+  <desc id="description">A golden Verity companion surrounded by 15 reference expressions, 721 behavioral animations, and 16 motion categories.</desc>
+  <defs>
+    <radialGradient id="bg" cx="0" cy="0" r="1" gradientTransform="matrix(900 620 -760 1110 562 20)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22200C"/>
+      <stop offset=".56" stop-color="#111214"/>
+      <stop offset="1" stop-color="#090A0B"/>
+    </radialGradient>
+    <radialGradient id="orb" cx="0" cy="0" r="1" gradientTransform="rotate(47 -50 700) scale(190)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF65B"/>
+      <stop offset=".58" stop-color="#F4E500"/>
+      <stop offset="1" stop-color="#BCAE00"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="353" x2="662" y1="201" y2="503" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F4E500" stop-opacity=".58"/>
+      <stop offset="1" stop-color="#F4E500" stop-opacity=".04"/>
+    </linearGradient>
+    <filter id="glow" x="286" y="151" width="410" height="410" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="24"/>
+    </filter>
+    <pattern id="grid" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#F4E500" fill-opacity=".16"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="660" rx="28" fill="url(#bg)"/>
+  <rect width="1200" height="660" rx="28" fill="url(#grid)" opacity=".48"/>
+  <circle cx="490" cy="330" r="156" fill="#F4E500" fill-opacity=".15" filter="url(#glow)"/>
+  <ellipse cx="490" cy="330" rx="203" ry="194" stroke="url(#ring)" stroke-width="1.5" transform="rotate(-19 490 330)"/>
+  <ellipse cx="490" cy="330" rx="238" ry="131" stroke="#F4E500" stroke-opacity=".15" transform="rotate(34 490 330)"/>
+  <circle cx="490" cy="330" r="151" fill="url(#orb)"/>
+  <path d="M356 286c16-53 66-95 129-105-27 30-43 78-43 135 0 62 19 112 49 142-82 0-148-66-148-148 0-8 1-16 2-24Z" fill="#FFF86A" fill-opacity=".2"/>
+  <path d="M421 316c0-14 9-25 21-25s21 11 21 25-9 25-21 25-21-11-21-25Zm95 0c0-14 9-25 21-25s21 11 21 25-9 25-21 25-21-11-21-25Z" fill="#101113"/>
+  <path d="M414 377c35 44 107 60 158 8" stroke="#101113" stroke-width="13" stroke-linecap="round"/>
+  <circle cx="312" cy="227" r="4" fill="#F4E500"/>
+  <circle cx="656" cy="420" r="3" fill="#D4DFC7"/>
+  <circle cx="619" cy="185" r="3" fill="#F4E500" fill-opacity=".7"/>
+  <path d="M590 242 729 180" stroke="#F4E500" stroke-opacity=".38" stroke-dasharray="3 7"/>
+  <path d="M603 391 727 449" stroke="#D4DFC7" stroke-opacity=".32" stroke-dasharray="3 7"/>
+  <rect x="64" y="54" width="135" height="27" rx="13.5" fill="#F4E500" fill-opacity=".1"/>
+  <text x="81" y="72" fill="#F4E500" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="2.1">MOTION ATLAS</text>
+  <text x="64" y="128" fill="#F3F0E3" font-family="Georgia,serif" font-size="35">A presence with range.</text>
+  <text x="66" y="158" fill="#9E9F99" font-family="Segoe UI,Arial,sans-serif" font-size="14">One expressive companion. Hundreds of ways to react.</text>
+  <rect x="754" y="142" width="378" height="132" rx="19" fill="#191A1B" stroke="#FFFFFF" stroke-opacity=".09"/>
+  <text x="782" y="179" fill="#A7A99E" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="600" letter-spacing="1.4">BEHAVIORAL ANIMATIONS</text>
+  <text x="778" y="234" fill="#F4E500" font-family="Segoe UI,Arial,sans-serif" font-size="48" font-weight="700">721</text>
+  <text x="918" y="230" fill="#E9E8DF" font-family="Segoe UI,Arial,sans-serif" font-size="14">registered behaviors</text>
+  <text x="918" y="251" fill="#8E908B" font-family="Segoe UI,Arial,sans-serif" font-size="12">121 core · 600 extended variations</text>
+  <rect x="754" y="292" width="180" height="112" rx="19" fill="#191A1B" stroke="#FFFFFF" stroke-opacity=".09"/>
+  <text x="780" y="329" fill="#A7A99E" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="600" letter-spacing="1.1">REFERENCE FACES</text>
+  <text x="780" y="379" fill="#F3F0E3" font-family="Segoe UI,Arial,sans-serif" font-size="34" font-weight="650">15</text>
+  <text x="832" y="378" fill="#8E908B" font-family="Segoe UI,Arial,sans-serif" font-size="12">expressions</text>
+  <rect x="951" y="292" width="181" height="112" rx="19" fill="#191A1B" stroke="#FFFFFF" stroke-opacity=".09"/>
+  <text x="977" y="329" fill="#A7A99E" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="600" letter-spacing="1.1">MOTION GROUPS</text>
+  <text x="977" y="379" fill="#F3F0E3" font-family="Segoe UI,Arial,sans-serif" font-size="34" font-weight="650">16</text>
+  <text x="1029" y="378" fill="#8E908B" font-family="Segoe UI,Arial,sans-serif" font-size="12">categories</text>
+  <text x="754" y="459" fill="#A7A99E" font-family="Segoe UI,Arial,sans-serif" font-size="11" font-weight="600" letter-spacing="1.2">A FEW MOODS TO EXPLORE</text>
+  <g font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="600">
+    <rect x="754" y="478" width="102" height="34" rx="17" fill="#242522" stroke="#F4E500" stroke-opacity=".24"/><text x="774" y="500" fill="#E8E5D7">Curious</text>
+    <rect x="866" y="478" width="100" height="34" rx="17" fill="#242522" stroke="#F4E500" stroke-opacity=".24"/><text x="887" y="500" fill="#E8E5D7">Playful</text>
+    <rect x="976" y="478" width="108" height="34" rx="17" fill="#242522" stroke="#F4E500" stroke-opacity=".24"/><text x="998" y="500" fill="#E8E5D7">Thoughtful</text>
+    <rect x="754" y="523" width="110" height="34" rx="17" fill="#242522" stroke="#D4DFC7" stroke-opacity=".2"/><text x="774" y="545" fill="#D4DFC7">Attentive</text>
+    <rect x="874" y="523" width="100" height="34" rx="17" fill="#242522" stroke="#D4DFC7" stroke-opacity=".2"/><text x="893" y="545" fill="#D4DFC7">Resting</text>
+    <rect x="984" y="523" width="100" height="34" rx="17" fill="#242522" stroke="#D4DFC7" stroke-opacity=".2"/><text x="1004" y="545" fill="#D4DFC7">Eureka</text>
+  </g>
+  <path d="M64 596h1072" stroke="#FFFFFF" stroke-opacity=".1"/>
+  <text x="64" y="624" fill="#7E807B" font-family="Segoe UI,Arial,sans-serif" font-size="11" letter-spacing="1.5">EXPLORE EXPRESSIONS · TUNE PRESENCE · MAKE IT YOURS</text>
+  <circle cx="1126" cy="620" r="4" fill="#F4E500"/>
+</svg>
