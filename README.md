@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="src/assets/verity-hero.svg" alt="Verity, an expressive golden desktop companion" width="100%">
+<img src=".github/assets/01-hero.png" alt="Verity, an expressive golden desktop companion" width="100%">
 
 # VERITY
 
@@ -32,6 +32,8 @@ An expressive 3D companion for AI conversations, voice, and agent activity. Veri
 
 - [What Verity does](#-what-verity-does)
 - [A quick tour](#-a-quick-tour)
+- [Tune the personality](#-tune-the-personality)
+- [Floating presence](#-floating-presence)
 - [Download for Windows](#-download-for-windows)
 - [Get started](#-get-started)
 - [Connect an AI provider](#-connect-an-ai-provider)
@@ -56,7 +58,27 @@ An expressive 3D companion for AI conversations, voice, and agent activity. Veri
 The gold sphere is Verity’s canvas: a configurable avatar that responds as the conversation moves. Its motion library includes 721 registered behaviors, 15 reference expressions, and 16 categories.
 
 <p align="center">
-  <img src="docs/assets/verity-motion-atlas.svg" alt="Verity motion atlas showing the golden companion, 721 registered animations, 15 reference expressions, and 16 categories" width="100%">
+  <img src=".github/assets/02-motion-atlas.png" alt="Verity motion atlas showing 721 registered behaviors, 15 reference expressions, and 16 motion groups" width="100%">
+</p>
+
+<p align="center">
+  <img src=".github/assets/10-expression-studies.png" alt="Expression studies: curious, resting, playful, surprised, and settled" width="100%">
+</p>
+
+## 🎛️ Tune the personality
+
+The studio brings expression, timing, and motion controls together so you can shape how Verity reacts.
+
+<p align="center">
+  <img src=".github/assets/03-motion-studio.png" alt="Conceptual illustration of Verity's motion studio controls; this is promotional artwork, not an app screenshot" width="100%">
+</p>
+
+## 🪟 Floating presence
+
+Keep Verity nearby in a compact companion window while you work. This illustration is conceptual promotional artwork.
+
+<p align="center">
+  <img src=".github/assets/07-floating-mode.png" alt="Conceptual illustration of Verity in floating companion mode" width="100%">
 </p>
 
 ## ⬇️ Download for Windows
@@ -127,6 +149,10 @@ Choose a provider in the conversation bar and use **Setup** to add, replace, or 
 
 Built-in providers include OpenAI, Azure OpenAI, Anthropic Claude, Google Gemini, Groq, OpenRouter, Mistral, DeepSeek, xAI, Together AI, Fireworks AI, Cerebras, Perplexity, Cohere, and SambaNova. Verity also supports local Ollama and LM Studio servers, a custom OpenAI-compatible endpoint, and an optional Hermes Gateway. Use **Load available models** to fetch the list from your selected provider.
 
+<p align="center">
+  <img src=".github/assets/06-providers.png" alt="Promotional illustration of Verity's configurable model providers" width="100%">
+</p>
+
 Provider environment variables are available for command-line and browser-server setups:
 
 | Variable | Purpose |
@@ -146,9 +172,17 @@ Provider environment variables are available for command-line and browser-server
 
 See [docs/HERMES_DESKTOP_CLIENT.md](docs/HERMES_DESKTOP_CLIENT.md) for the Gateway flow and additional configuration notes. Keep the Gateway bound to a trusted local network and supply your own credentials.
 
+<p align="center">
+  <img src=".github/assets/05-hermes.png" alt="Promotional illustration of Verity connected to an optional Hermes Gateway" width="100%">
+</p>
+
 ## 🎙️ Voice and local services
 
 Voice is optional. The UI can fall back to browser speech if local synthesis is unavailable. The local service commands expect a separately prepared Python environment and the required model files:
+
+<p align="center">
+  <img src=".github/assets/04-voice.png" alt="Verity voice and animated lip movement" width="100%">
+</p>
 
 ```powershell
 npm run tts         # Kokoro voice service
@@ -157,6 +191,10 @@ npm run sentiment   # Local sentiment service
 ```
 
 Microphone transcription currently supports OpenAI and Groq. Chat supports all providers above. Review the selected provider’s data handling before enabling voice input.
+
+<p align="center">
+  <img src=".github/assets/09-section-divider.png" alt="Verity section divider" width="100%">
+</p>
 
 ## 🧰 Developer commands
 
@@ -196,6 +234,15 @@ Check your provider settings and local environment before sharing logs or diagno
 ## 📦 Commercial release
 
 This repository is still in development. No project distribution license is specified yet. Before distributing source or binaries, review [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md), confirm rights for code and media, audit dependency notices, and define the installer, signing, privacy, and support processes.
+
+<details>
+<summary><strong>Social preview artwork</strong></summary>
+
+<p align="center">
+  <img src=".github/assets/08-social-preview.png" alt="Verity promotional artwork for social sharing" width="100%">
+</p>
+
+</details>
 
 <div align="center">
 
