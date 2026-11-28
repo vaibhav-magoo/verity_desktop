@@ -11,6 +11,7 @@ An expressive 3D companion for AI conversations, voice, and agent activity. Veri
 <p>
   <a href="#-get-started"><strong>Get started</strong></a> ·
   <a href="#-download-for-windows"><strong>Download for Windows</strong></a> ·
+  <a href="#-screenshots">Screenshots</a> ·
   <a href="#-what-verity-does">Explore features</a> ·
   <a href="docs/HERMES_DESKTOP_CLIENT.md">Hermes integration</a>
 </p>
@@ -31,6 +32,7 @@ An expressive 3D companion for AI conversations, voice, and agent activity. Veri
 <summary><strong>Contents</strong></summary>
 
 - [What Verity does](#-what-verity-does)
+- [Screenshots](#-screenshots)
 - [A quick tour](#-a-quick-tour)
 - [Tune the personality](#-tune-the-personality)
 - [Floating presence](#-floating-presence)
@@ -52,6 +54,36 @@ An expressive 3D companion for AI conversations, voice, and agent activity. Veri
 | **A face with range** | 15 reference expressions and 721 registered behavioral animations bring reactions to life: 121 core behaviors plus 600 extended procedural variations across 16 categories. | **A companion that moves** | Keep Verity in the studio or pop it out into a compact floating desktop view. |
 | **A voice you can shape** | Optional local speech synthesis, local custom speech, microphone input, and animated lip movement. | **A studio to tune it** | Explore motion, expression, presence, voice, and conversation controls in one interface. |
 | **Agent-aware presence** | Optional Hermes Gateway connection can surface agent activity and tool states through the avatar. | **A little theatre** | Trigger playful actions directly from the interface, from a yawn to a screen breakout. |
+
+## 📸 Screenshots
+
+### Studio conversation
+Chat with Verity alongside the live 3D avatar, switch models and providers on the fly, toggle voice output, or pop out into Companion mode.
+
+<p align="center">
+  <img src=".github/assets/screenshots/studio-conversation.jpg" alt="Verity Studio conversation window showing the 3D avatar, chat panel, voice toggle, and provider bar" width="100%">
+</p>
+
+### Voice & faces customization
+Shape Verity's voice modulation, pitch presets, timbre, mood-driven auto-modulation, and trigger any of the 15 reference face morphs directly from the studio.
+
+<p align="center">
+  <img src=".github/assets/screenshots/voice-and-faces.jpg" alt="Verity Voice and faces customization view with modulation presets and 15 reference face morphs" width="100%">
+</p>
+
+### Floating companion mode
+Keep Verity floating over your desktop with quick access (`Ctrl + Alt + V` to chat from anywhere) and microphone status controls.
+
+<p align="center">
+  <img src=".github/assets/screenshots/companion-overlay.jpg" alt="Verity floating companion overlay on Windows desktop with Ask Verity anything prompt bar" width="100%">
+</p>
+
+### Startup & multi-provider switching
+
+| Launch screen | Built-in AI providers |
+| :---: | :---: |
+| <img src=".github/assets/screenshots/splash-screen.jpg" alt="Verity desktop app splash screen" width="460"> | <img src=".github/assets/screenshots/provider-selector.png" alt="Verity provider dropdown listing Hermes Gateway, Groq, OpenAI, Anthropic Claude, Google Gemini, Ollama, LM Studio, and more" width="260"> |
+| *Verity desktop startup screen* | *Cloud providers, local Ollama / LM Studio, Custom OpenAI-compatible endpoints, and Hermes Gateway* |
 
 ## 🪩 A quick tour
 
